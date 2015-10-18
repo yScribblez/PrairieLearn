@@ -4,6 +4,8 @@ requirejs.config({
     baseUrl: 'require',
     paths: {
         clientCode: (document.PLConfig.apiServer || PRAIRIELEARN_DEFAULT_API_SERVER) + "/clientCode",
+        THREE: 'three.min',
+        OrbitControls: 'OrbitControls',
     },
     map: {
         '*': {
@@ -44,6 +46,12 @@ requirejs.config({
         },
         'sha1': {
             exports: 'Sha1',
+        },
+        'THREE': {
+            exports: 'THREE',
+        },
+        'OrbitControls': {
+            deps: ['THREE'],
         },
     },
     config: {
