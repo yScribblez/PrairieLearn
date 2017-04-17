@@ -162,7 +162,7 @@ def main():
             environ_error = True
         else:
             info['jobs_bucket'] = os.environ['S3_JOBS_BUCKET']
-        del os.environ["S3_JOBS_BUCKET"]
+            del os.environ["S3_JOBS_BUCKET"]
 
         if 'S3_RESULTS_BUCKET' not in os.environ:
             error('the S3 results bucket was not specified in the S3_RESULTS_BUCKET environment variable')
