@@ -1,7 +1,7 @@
 {
     "name": "PrairieLearn",
     "description": "PrairieLearn online problem-solving system",
-    "version": "2.9.0",
+    "version": "2.9.1",
     "private": true,
     "dependencies": {
         "adm-zip": "0.4.x",
