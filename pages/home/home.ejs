@@ -81,7 +81,7 @@
           No courses found. Use the “Add or remove courses” button below.
         </div>
         <% } %> <!-- devMode -->
-        
+
         <% } else { %> <!-- course_instances.length -->
 
         <table class="table table-condensed table-hover table-striped">
@@ -108,6 +108,82 @@
           </p>
         </div>
       </div>
+
+
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">Dave new panel</h3>
+        </div>
+
+        <% if (master && Object.keys(master).length == 0) { %>
+
+          <% if (devMode) { %>
+            <div class="panel-body">
+              No courses loaded. Click <strong>“Load from disk”</strong>
+              above and then click <strong>“Home”</strong> to come back to
+              this page.
+            </div>
+          <% } else { %> <!-- devMode -->
+            <div class="panel-body">
+              No courses found. Use the “Add or remove courses” button below.
+            </div>
+          <% } %>
+        <% } else { %>
+
+
+        <table class="table table-condensed table-hover table-striped">
+          <thead>
+            <tr><th>Course</th><th>Course Instances</th></tr>
+          </thead>
+          <tbody>
+            <% Object.keys(master).forEach(function(short_name) { %>
+            <tr>
+              <td>
+                <% if (master[short_name].course_info) { %>
+                  <a href="<%= plainUrlPrefix %>/course/<%= master[short_name].course_info.id %>">
+                  <%= short_name %>: <%= master[short_name].course_info.title %>
+                </a>&nbsp;
+                <%   var has_course_access = true;
+                   } else {
+                     var has_course_access = false;
+                %>
+                  <%= short_name %>: <%= master[short_name].course_instances[0].c_title %>
+                <% } %>
+              </td>
+              <td>
+                <% if (master[short_name].course_instances) {
+                   master[short_name].course_instances.forEach(function(ci) { %>
+
+                     <a href="<%= plainUrlPrefix %>/course_instance/<%= ci.id %>">
+                       <%= ci.ci_long_name %>
+                     </a>
+
+                <% });
+              } else {
+                if (has_course_access) { %><em><--- Course admins, click here and Sync to add content!</em> <% } } %>
+
+
+
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+
+        <% } %>
+
+        <div class="panel-footer">
+          <p class="text-right no-bottom-margin">
+            <a href="<%= plainUrlPrefix %>/enroll" class="btn btn-primary">
+              Add or remove courses
+            </a>
+          </p>
+        </div>
+      </div>
+
+
+
     </div>
   </body>
 </html>

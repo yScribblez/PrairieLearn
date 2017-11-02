@@ -12,7 +12,9 @@ courses_list AS (
     SELECT
         coalesce(jsonb_agg(jsonb_build_object(
             'label', c.short_name || ': ' || c.title,
-            'id', c.id
+            'id', c.id,
+            'short_name', c.short_name,
+            'title', c.title
         ) ORDER BY c.short_name, c.title, c.id), '[]'::jsonb) AS courses
     FROM
         pl_courses AS c
@@ -38,7 +40,10 @@ course_instances_list AS (
     SELECT
         coalesce(jsonb_agg(jsonb_build_object(
             'label', c.short_name || ': ' || c.title || ', ' || ci.long_name,
-            'id', ci.id
+            'id', ci.id,
+            'ci_long_name', ci.long_name,
+            'c_short_name', c.short_name,
+            'c_title', c.title
         ) ORDER BY c.short_name, c.title, c.id, ci.number DESC, ci.id), '[]'::jsonb) AS course_instances
     FROM
         pl_courses AS c
