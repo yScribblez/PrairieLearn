@@ -16,9 +16,17 @@
               <p class="file-status">uploaded</p>
             </div>
             <div class="file-status-container-right">
-              <button type="button" class="btn btn-default btn-xs file-preview-button">
-                <span class="file-preview-icon glyphicon glyphicon-chevron-down"></span>
-              </button>
+              <div class="btn-group" role="group">
+                <a type="button" class="btn btn-default" title="Download file" data-toggle="tooltip" data-placement="top" data-container="body" download="{{name}}" href="data:data:application/octet-stream;charset=utf-8;base64,{{base64_contents}}">
+                  <i class="fa fa-download" aria-hidden="true"></i>
+                </a>
+                <a type="button" class="btn btn-default btn-file-preview" title="Show/hide preview" data-toggle="tooltip" data-placement="top" data-container="body">
+                  <i class="fa fa-eye" aria-hidden="true"></i>
+                </a>
+                <!--<button type="button" class="btn btn-default file-preview-button">
+                  <span class="file-preview-icon glyphicon glyphicon-chevron-down"></span>
+                </button>-->
+              </div>
             </div>
           </div>
           <div class="file-preview collapse" id="file-preview-contents-{{uuid}}-{{index}}">
@@ -35,4 +43,9 @@
       {{/has_files}}
     </div>
   </div>
+  <script>
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  });
+  </script>
 </div>

@@ -9,6 +9,8 @@ window.PLFileEditor = function(uuid, options) {
 
     this.inputElement = this.element.find('input');
     this.editorElement = this.element.find('.editor');
+    this.downloadElement = this.element.find('.btn-download');
+    
     this.editor = ace.edit(this.editorElement.get(0));
     this.editor.setTheme('ace/theme/chrome');
     this.editor.getSession().setUseWrapMode(true);
@@ -36,7 +38,9 @@ window.PLFileEditor = function(uuid, options) {
 };
 
 window.PLFileEditor.prototype.syncFileToHiddenInput = function() {
-    this.inputElement.val(this.b64EncodeUnicode(this.editor.getValue()));
+    var base64EncodedFile = this.b64EncodeUnicode(this.editor.getValue());
+    this.inputElement.val(base64EncodedFile);
+    this.downloadElement.attr('href', 'data:data:application/octet-stream;charset=utf-8;base64,' + base64EncodedFile);
 };
 
 window.PLFileEditor.prototype.b64DecodeUnicode = function(str) {

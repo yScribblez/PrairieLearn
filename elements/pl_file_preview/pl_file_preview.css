@@ -33,24 +33,15 @@
   color: #999;
 }
 
-[id^=file-preview] .file-preview-button::before {
-  content: 'Show preview';
+[id^=file-preview] .btn-file-preview {
+  transition: background 400ms;
 }
 
-[id^=file-preview] .file-status-container:not(.collapsed) .file-preview-button::before {
-  content: 'Hide preview';
-}
-
-[id^=file-preview] .file-preview-icon {
-  margin-left: 10px;
-  transition: all 400ms;
-}
-
-[id^=file-preview] .file-status-container:not(.collapsed) .file-preview-icon {
-  transform: rotateX(180deg);
+[id^=file-preview] .file-status-container:not(.collapsed) .btn-file-preview {
+  background: #e6e6e6;
 }
 
 [id^=file-preview] .file-preview pre {
   margin-top: 10px;
-  max-height: 200px;
+  max-height: 250px;
 }

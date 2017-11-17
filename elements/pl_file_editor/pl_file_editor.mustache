@@ -15,7 +15,11 @@ $(function() {
     <input type="hidden" name="{{name}}">
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h4 class="panel-title">{{file_name}}</h4>
+            <h4 class="panel-title pull-left">{{file_name}}</h4>
+            <a type="button" class="btn btn-default btn-xs pull-right btn-download" download="{{file_name}}" title="Download file" data-toggle="tooltip" data-placement="bottom" data-container="body">
+              <i class="fa fa-download" aria-hidden="true"></i>
+            </a>
+            <div class="clearfix"></div>
         </div>
         <div class="editor"></div>
     </div>

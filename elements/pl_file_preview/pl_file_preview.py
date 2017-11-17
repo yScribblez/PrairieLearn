@@ -40,6 +40,7 @@ def render(element_html, element_index, data):
             files.append({
                 'name': file['name'],
                 'contents': contents,
+                'base64_contents': file['contents'],
                 'index': idx
             })
         html_params['has_files'] = True
