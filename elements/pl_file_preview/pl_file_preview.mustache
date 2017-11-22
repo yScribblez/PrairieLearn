@@ -20,12 +20,14 @@
                 <a type="button" class="btn btn-default" title="Download file" data-toggle="tooltip" data-placement="top" data-container="body" download="{{name}}" href="data:data:application/octet-stream;charset=utf-8;base64,{{base64_contents}}">
                   <i class="fa fa-download" aria-hidden="true"></i>
                 </a>
+                {{#copyable}}
+                <a type="button" class="btn btn-default" title="Copy file to clipboard" data-toggle="tooltip" data-placement="top" data-container="body" onclick="PrairieUtil.copyToClipboard('{{contents}}')">
+                  <i class="fa fa-clipboard" aria-hidden="true"></i>
+                </a>
+                {{/copyable}}
                 <a type="button" class="btn btn-default btn-file-preview" title="Show/hide preview" data-toggle="tooltip" data-placement="top" data-container="body">
                   <i class="fa fa-eye" aria-hidden="true"></i>
                 </a>
-                <!--<button type="button" class="btn btn-default file-preview-button">
-                  <span class="file-preview-icon glyphicon glyphicon-chevron-down"></span>
-                </button>-->
               </div>
             </div>
           </div>

@@ -1,6 +1,9 @@
 {
     "controller": "pl_file_preview.py",
     "dependencies": {
+        "coreScripts": [
+            "PrairieUtil.js"
+        ],
         "elementStyles": [
             "pl_file_preview.css"
         ]

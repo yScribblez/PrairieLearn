@@ -35,13 +35,16 @@ def render(element_html, element_index, data):
         for idx, file in enumerate(submitted_files):
             try:
                 contents = base64.b64decode(file['contents'] or '').decode()
+                copyable = True
             except UnicodeDecodeError:
                 contents = 'Unable to decode file.'
+                copyable = False
             files.append({
                 'name': file['name'],
                 'contents': contents,
                 'base64_contents': file['contents'],
-                'index': idx
+                'index': idx,
+                'copyable': copyable
             })
         html_params['has_files'] = True
         html_params['files'] = files

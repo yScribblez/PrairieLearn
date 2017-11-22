@@ -1,5 +1,5 @@
 /* eslint-env browser,jquery */
-/* global _ */
+/* global _, PrairieUtil */
 $(function() {
     if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
         alert('Warning: Your browser does not fully support HTML5 file upload operations.' +
@@ -166,8 +166,8 @@ window.PLFileUpload.prototype.renderFileList = function() {
                 $preview.addClass('in');
             }
             try {
-                var fileContents = that.b64DecodeUnicode(fileData);
-                if (!that.isBinary(fileContents)) {
+                var fileContents = PrairieUtil.b64DecodeUnicode(fileData);
+                if (!PrairieUtil.isBinary(fileContents)) {
                     $preview.find('code').text(fileContents);
                 } else {
                     $preview.find('code').text('Binary file not previewed.');
@@ -187,33 +187,4 @@ window.PLFileUpload.prototype.addWarningMessage = function(message) {
     var $alert = $('<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
     $alert.append(message);
     this.element.find('.messages').append($alert);
-};
-
-/**
-* Checks if the given file contents should be treated as binary or
-* text. Uses the same method as git: if the first 8000 bytes contain a
-* NUL character ('\0'), we consider the file to be binary.
-* http://stackoverflow.com/questions/6119956/how-to-determine-if-git-handles-a-file-as-binary-or-as-text
-* @param  {String}  decodedFileContents File contents to check
-* @return {Boolean}                     If the file is recognized as binary
-*/
-window.PLFileUpload.prototype.isBinary = function(decodedFileContents) {
-    var nulIdx = decodedFileContents.indexOf('\0');
-    var fileLength = decodedFileContents.length;
-    return nulIdx != -1 && nulIdx <= (fileLength <= 8000 ? fileLength : 8000);
-};
-
-/**
-* To support unicode strings, we use a method from Mozilla to decode:
-* first we get the bytestream, then we percent-encode it, then we
-* decode that to the original string.
-* https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding#The_Unicode_Problem
-* @param  {String} str the base64 string to decode
-* @return {String}     the decoded string
-*/
-window.PLFileUpload.prototype.b64DecodeUnicode = function(str) {
-    // Going backwards: from bytestream, to percent-encoding, to original string.
-    return decodeURIComponent(atob(str).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
 };
