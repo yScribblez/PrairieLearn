@@ -2,3 +2,8 @@
   height: 300px;
   width: 100%;
 }
+
+[id^=file-editor] .copy-success {
+  padding: 6px;
+  margin-right: 10px;
+}

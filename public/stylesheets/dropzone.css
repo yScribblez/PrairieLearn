@@ -1,0 +1,24 @@
+/* Global styles for file upload dropzones */
+
+.pl-dropzone {
+  position: relative;
+  min-height: 15ex;
+  border-radius: 4px;
+  background-color: #FAFDFF;
+  border: 2px dashed #0087F7;
+  margin-bottom: 20px;
+}
+.pl-dropzone.dz-clickable {
+  cursor: pointer;
+}
+.pl-dropzone.dz-drag-hover {
+  background-color: #D9EDF7;
+  border-style: solid;
+}
+.pl-dropzone .dz-message {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  width: 100%;
+}

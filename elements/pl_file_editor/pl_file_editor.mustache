@@ -16,7 +16,8 @@ $(function() {
     <div class="panel panel-default">
         <div class="panel-heading">
             <h4 class="panel-title pull-left">{{file_name}}</h4>
-            <div class="btn-group pull-right">
+            <div class="btn-group pull-right row-fluid">
+                <span class="label label-success pull-left copy-success" style="display: none;">Copied to clipboard</span>
                 <a type="button" class="btn btn-default btn-xs btn-upload" title="Upload file" data-toggle="tooltip" data-placement="bottom" data-container="body">
                     <i class="fa fa-upload" aria-hidden="true"></i>
                 </a>
@@ -31,6 +32,36 @@ $(function() {
         </div>
         <div class="editor"></div>
     </div>
-    {{submission}}
+    <div class="modal fade file-editor-upload" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Upload file</h4>
+                </div>
+                <div class="modal-body">
+                    <p>You can upload a file to replace the contents of this editor.</p>
+                    <div class="pl-dropzone">
+                        <div class="dz-message">
+                            Drop files here or click to upload.
+                            <br/>
+                            <small>Only the files listed below will be accepted&mdash;others will be ignored.</small>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible binary-error" role="alert" style="display: none;">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        You appear to have uploaded a binary file; please upload a text file instead.
+                    </div>
+                    <pre style="display: none;"><code></code></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary btn-replace">Replace contents</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {{/question}}

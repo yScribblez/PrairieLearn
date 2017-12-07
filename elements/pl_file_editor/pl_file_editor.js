@@ -10,7 +10,11 @@ window.PLFileEditor = function(uuid, options) {
     this.inputElement = this.element.find('input');
     this.editorElement = this.element.find('.editor');
     this.downloadElement = this.element.find('.btn-download');
+    this.uploadElement = this.element.find('.btn-upload');
     this.clipboardElement = this.element.find('.btn-clipboard');
+    this.copySuccessElement = this.element.find('.copy-success');
+    this.fileUploadModalElement = this.element.find('.file-editor-upload');
+    this.fileUploadReplaceButtonElement = this.fileUploadModalElement.find('.btn-replace');
 
     this.editor = ace.edit(this.editorElement.get(0));
     this.editor.setTheme('ace/theme/chrome');
@@ -32,19 +36,92 @@ window.PLFileEditor = function(uuid, options) {
     if (options.currentContents) {
         currentContents = PrairieUtil.b64DecodeUnicode(options.currentContents);
     }
-    this.editor.setValue(currentContents);
-    this.editor.gotoLine(1, 0);
-    this.editor.focus();
+    this.setEditorContents(currentContents);
     this.syncFileToHiddenInput();
+    this.initializeFileUploadModal();
 
-    // this.clipboardElement.click(this.copyToClipboard.bind(this));
-    this.clipboardElement.click(function() {
-        PrairieUtil.copyToClipboard(this.editor.getValue());
-    }.bind(this));
+    this.clipboardElement.click(this.copyToClipboard.bind(this));
+    this.uploadElement.click(this.openFileUploadModal.bind(this));
+
+    // Initialize bootstrap tooltips
+    this.element.find('[data-toggle="tooltip"]').tooltip();
+};
+
+window.PLFileEditor.prototype.initializeFileUploadModal = function() {
+    var that = this;
+
+    var dropTarget = this.fileUploadModalElement.find('.pl-dropzone');
+    dropTarget.dropzone({
+        url: '/none',
+        autoProcessQueue: false,
+        addedfile: function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var dataUrl = e.target.result;
+                var commaSplitIdx = dataUrl.indexOf(',');
+                var base64FileData = dataUrl.substring(commaSplitIdx + 1);
+
+                var decodeFailed = false;
+                try {
+                    var contents = PrairieUtil.b64DecodeUnicode(base64FileData);
+                } catch (e) {
+                    decodeFailed = true;
+                }
+                if (decodeFailed || PrairieUtil.isBinary(contents)) {
+                    that.fileUploadModalElement.find('.binary-error').show();
+                } else {
+                    that.fileUploadModalElement.find('code').text(contents);
+                    that.fileUploadModalElement.find('pre').show();
+                    that.fileUploadReplaceButtonElement.removeClass('disabled');
+                    that.fileUploadReplaceButtonElement.prop('disabled', false);
+                    that.uploadedFileContents = contents;
+                }
+            };
+
+            that.fileUploadModalElement.find('.binary-error').hide();
+            reader.readAsDataURL(file);
+        }.bind(this),
+    });
+
+    this.fileUploadModalElement.on('hidden.bs.modal', function() {
+        // Reset modal state
+        that.fileUploadModalElement.find('pre').hide();
+        that.fileUploadModalElement.find('code').text('');
+        that.fileUploadReplaceButtonElement.addClass('disabled');
+        that.fileUploadReplaceButtonElement.prop('disabled', true);
+        that.uploadedFileContents = null;
+    });
+
+    this.fileUploadReplaceButtonElement.click(function() {
+        if (that.uploadedFileContents != null) {
+            that.setEditorContents(that.uploadedFileContents);
+        }
+        that.fileUploadModalElement.modal('hide');
+    });
 };
 
 window.PLFileEditor.prototype.syncFileToHiddenInput = function() {
     var base64EncodedFile = PrairieUtil.b64EncodeUnicode(this.editor.getValue());
     this.inputElement.val(base64EncodedFile);
     this.downloadElement.attr('href', 'data:data:application/octet-stream;charset=utf-8;base64,' + base64EncodedFile);
+};
+
+window.PLFileEditor.prototype.copyToClipboard = function() {
+    var that = this;
+    PrairieUtil.copyToClipboard(this.editor.getValue());
+    this.copySuccessElement.fadeIn(300, function() {
+        setTimeout(function() {
+            that.copySuccessElement.fadeOut(300);
+        }, 1000);
+    });
+};
+
+window.PLFileEditor.prototype.openFileUploadModal = function() {
+    this.fileUploadModalElement.modal('show');
+};
+
+window.PLFileEditor.prototype.setEditorContents = function(contents) {
+    this.editor.setValue(contents);
+    this.editor.gotoLine(1, 0);
+    this.editor.focus();
 };
