@@ -67,6 +67,8 @@ window.PLFileEditor.prototype.initializeFileUploadModal = function() {
                 } catch (e) {
                     decodeFailed = true;
                 }
+
+                that.resetFileUploadModal();
                 if (decodeFailed || PrairieUtil.isBinary(contents)) {
                     that.fileUploadModalElement.find('.binary-error').show();
                 } else {
@@ -78,18 +80,12 @@ window.PLFileEditor.prototype.initializeFileUploadModal = function() {
                 }
             };
 
-            that.fileUploadModalElement.find('.binary-error').hide();
             reader.readAsDataURL(file);
         }.bind(this),
     });
 
     this.fileUploadModalElement.on('hidden.bs.modal', function() {
-        // Reset modal state
-        that.fileUploadModalElement.find('pre').hide();
-        that.fileUploadModalElement.find('code').text('');
-        that.fileUploadReplaceButtonElement.addClass('disabled');
-        that.fileUploadReplaceButtonElement.prop('disabled', true);
-        that.uploadedFileContents = null;
+        that.resetFileUploadModal();
     });
 
     this.fileUploadReplaceButtonElement.click(function() {
@@ -118,6 +114,15 @@ window.PLFileEditor.prototype.copyToClipboard = function() {
 
 window.PLFileEditor.prototype.openFileUploadModal = function() {
     this.fileUploadModalElement.modal('show');
+};
+
+window.PLFileEditor.prototype.resetFileUploadModal = function() {
+    this.fileUploadModalElement.find('pre').hide();
+    this.fileUploadModalElement.find('code').text('');
+    this.fileUploadReplaceButtonElement.addClass('disabled');
+    this.fileUploadReplaceButtonElement.prop('disabled', true);
+    this.fileUploadModalElement.find('.binary-error').hide();
+    this.uploadedFileContents = null;
 };
 
 window.PLFileEditor.prototype.setEditorContents = function(contents) {
