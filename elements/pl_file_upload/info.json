@@ -6,6 +6,9 @@
             "dropzone.js",
             "PrairieUtil.js"
         ],
+        "coreStyles": [
+            "dropzone.css"
+        ],
         "elementScripts": [
             "pl_file_upload.js"
         ],
