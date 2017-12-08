@@ -4,6 +4,9 @@
         "coreScripts": [
             "PrairieUtil.js"
         ],
+        "elementScripts": [
+            "pl_file_preview.js"
+        ],
         "elementStyles": [
             "pl_file_preview.css"
         ]
