@@ -11,8 +11,9 @@
     <script>
       document.urlPrefix = '<%= urlPrefix %>';
     </script>
-    <% if (question.type != 'Freeform') { %>
+    <!-- Even v3 questions always require lodash (for the advances stats) -->
     <script type="text/javascript" src="/javascripts/lodash.min.js"></script>
+    <% if (question.type != 'Freeform') { %>
     <script type="text/javascript" src="/javascripts/require.js"></script>
     <script type="text/javascript" src="/localscripts/question.js"></script>
     <script type="text/javascript" src="/localscripts/question<%= effectiveQuestionType %>.js"></script>
@@ -35,7 +36,7 @@
             </tr>
             <tr>
               <th>QID</th>
-              <td><%= question.qid %> 
+              <td><%= question.qid %>
                   <% if (questionGHLink) { %>(<a target="_blank" href="<%= questionGHLink %>">view on GitHub</a>)<% } %>
               </td>
             </tr>
