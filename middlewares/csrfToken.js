@@ -3,6 +3,11 @@ var error = require('../lib/error');
 var csrf = require('../lib/csrf');
 
 module.exports = function(req, res, next) {
+    if (res.locals.skip_csrf) {
+        next();
+        return;
+    }
+    
     var tokenData = {
         url: req.originalUrl,
     };

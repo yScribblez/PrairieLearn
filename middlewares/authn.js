@@ -18,9 +18,15 @@ module.exports = function(req, res, next) {
     }
 
     if (/^\/pl\/webhooks\//.test(req.path)) {
-      // Webhook callbacks should not be authenticated
-      next();
-      return;
+        // Webhook callbacks should not be authenticated
+        next();
+        return;
+    }
+
+    // Some routes, like file uploads/downloads, will explicitly skip auth
+    if (res.locals.skip_auth) {
+        next();
+        return;
     }
 
     // bypass auth for local /pl/ serving

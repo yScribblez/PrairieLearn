@@ -98,6 +98,29 @@ app.use('/pl/oauth2callback', require('./pages/authCallbackOAuth2/authCallbackOA
 app.use('/pl/shibcallback', require('./pages/authCallbackShib/authCallbackShib'));
 app.use('/pl/azure_login', require('./pages/authLoginAzure/authLoginAzure'));
 app.use('/pl/azure_callback', require('./pages/authCallbackAzure/authCallbackAzure'));
+
+// We need to bypass the usual auth/cors/etc checks for the special files endpoints
+// We also unfortunately need separate routes for students and instructors
+const authSkipper = (req, res, next) => {
+    res.locals.skip_auth = true;
+    res.locals.skip_csrf = true;
+    next();
+};
+app.use('/pl/auth/:user_id/:auth_token/instructor/:variant_id/files', [
+    authSkipper,
+    require('./middlewares/questionFileAuthn'),
+    require('./middlewares/authzCourseInstance'),
+    require('./middlewares/selectAndAuthzInstructorQuestion'),
+    require('./pages/questionFiles/questionFiles'),
+]);
+app.use('/pl/auth/:user_id/:auth_token/:variant_id/files', [
+    authSkipper,
+    require('./middlewares/questionFileAuthn'),
+    require('./middlewares/authzCourseInstance'),
+    require('./middlewares/selectAndAuthzInstanceQuestion'),
+    require('./pages/questionFiles/questionFiles'),
+]);
+
 app.use(require('./middlewares/authn')); // authentication, set res.locals.authn_user
 app.use(require('./middlewares/csrfToken')); // sets and checks res.locals.__csrf_token
 app.use(require('./middlewares/logRequest'));
@@ -125,7 +148,7 @@ if (config.devMode) {
 }
 
 // all pages under /pl/course_instance require authorization
-app.use('/pl/course_instance/:course_instance_id', require('./middlewares/authzCourseInstance')); // sets res.locals.course and res.locals.courseInstance
+app.use('/pl/course_instance/:course_instance_id', require('./middlewares/authzCourseInstance')); // sets res.locals.course and res.locals.course_instance
 app.use('/pl/course_instance/:course_instance_id', function(req, res, next) {res.locals.urlPrefix = '/pl/course_instance/' + req.params.course_instance_id; next();});
 app.use('/pl/course_instance/:course_instance_id', function(req, res, next) {res.locals.navbarType = 'student'; next();});
 

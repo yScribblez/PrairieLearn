@@ -8,7 +8,7 @@ var sql = sqlLoader.loadSqlEquiv(__filename);
 
 module.exports = function(req, res, next) {
     var params = {
-        question_id: req.params.question_id,
+        question_id: res.locals.question_id || req.params.question_id,
         course_instance_id: res.locals.course_instance.id,
     };
     sqldb.queryOneRow(sql.select_and_auth, params, function(err, result) {

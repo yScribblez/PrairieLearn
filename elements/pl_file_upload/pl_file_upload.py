@@ -73,26 +73,39 @@ def parse(element_html, element_index, data):
     required_file_names = get_file_names_as_array(raw_file_names)
     answer_name = get_answer_name(raw_file_names)
 
-    # Get submitted answer or return parse_error if it does not exist
-    files = data['submitted_answers'].get(answer_name, None)
-    if not files:
-        add_format_error(data, 'No submitted answer for file upload.')
-        return
-
-    try:
-        parsed_files = json.loads(files)
-    except ValueError:
-        add_format_error(data, 'Could not parse submitted files.')
-
-    # Filter out any files that were not listed in file_names
-    parsed_files = [x for x in parsed_files if x.get('name', '') in required_file_names]
-
-    if data['submitted_answers'].get('_files', None) is None:
-        data['submitted_answers']['_files'] = parsed_files
-    elif isinstance(data['submitted_answers'].get('_files', None), list):
-        data['submitted_answers']['_files'].extend(parsed_files)
+    # It's possible that the files this element is responsible for were added
+    # from another source, possibly a POST upload. If they're present, let's
+    # source the files from the existing submission instead
+    if isinstance(data['submitted_answers'].get('_files', None), list):
+        submitted_files = data['submitted_answers']['_files']
+        existing_files = [f for f in submitted_files if f.get('name', '') in required_file_names]
     else:
-        add_format_error(data, '_files was present but was not an array.')
+        existing_files = []
+    if len(existing_files) > 0:
+        # At least one file was present, which means we shouldn't
+        # complain about a missing part of submitted_answers
+        parsed_files = existing_files
+    else:
+        # Get submitted answer or return parse_error if it does not exist
+        files = data['submitted_answers'].get(answer_name, None)
+        if not files:
+            add_format_error(data, 'No submitted answer for file upload.')
+            return
+
+        try:
+            parsed_files = json.loads(files)
+        except ValueError:
+            add_format_error(data, 'Could not parse submitted files.')
+
+        # Filter out any files that were not listed in file_names
+        parsed_files = [x for x in parsed_files if x.get('name', '') in required_file_names]
+
+        if data['submitted_answers'].get('_files', None) is None:
+            data['submitted_answers']['_files'] = parsed_files
+        elif isinstance(data['submitted_answers'].get('_files', None), list):
+            data['submitted_answers']['_files'].extend(parsed_files)
+        else:
+            add_format_error(data, '_files was present but was not an array.')
 
     # Validate that all required files are present
     if parsed_files is not None:

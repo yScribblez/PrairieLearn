@@ -35,6 +35,7 @@
         "mathjax": "^2.7.2",
         "mersenne": "0.0.4",
         "moment": "^2.20.1",
+        "multer": "^1.3.0",
         "mustache": "^2.3.0",
         "nodemon": "^1.14.7",
         "numeric": "^1.2.6",

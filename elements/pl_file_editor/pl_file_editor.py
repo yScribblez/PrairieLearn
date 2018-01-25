@@ -70,6 +70,13 @@ def parse(element_html, element_index, data):
     file_name = pl.get_string_attrib(element, 'file_name', '')
     answer_name = get_answer_name(file_name)
 
+    if isinstance(data['submitted_answers'].get('_files', None), list):
+        for f in data['submitted_answers']['_files']:
+            if 'name' in f and f['name'] == file_name:
+                # Someone else already handled this file for us
+                # Might have been a POST submission
+                return
+
     # Get submitted answer or return parse_error if it does not exist
     file_contents = data['submitted_answers'].get(answer_name, None)
     if not file_contents:
