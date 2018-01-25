@@ -8,6 +8,7 @@ const Parse = require('tar').Parse;
 const error = require('../../lib/error');
 const question = require('../../lib/question');
 const sqldb = require('../../lib/sqldb');
+const externalGradingSocket = require('../../lib/externalGradingSocket');
 
 function bufferToStream(buffer) {
   let stream = new Duplex();
@@ -67,6 +68,7 @@ function processSubmission(req, res, files, callback) {
 
         question.saveAndGradeSubmission(submission, variant, res.locals.question, res.locals.course, (err) => {
             if (ERR(err, callback)) return;
+            externalGradingSocket.variantUpdated(res.locals.variant_id);
             callback(null, submission.variant_id);
         });
     });

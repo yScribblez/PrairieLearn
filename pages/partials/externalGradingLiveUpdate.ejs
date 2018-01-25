@@ -25,27 +25,44 @@
 
     function handleStatusChange(msg) {
       msg.submissions.forEach(function(submission) {
-        // Always update results
-        updateStatus(submission);
+        // Check if this submission isn't in the DOM yet and add it if it is
+        var submissionId = 'submission-' + submission.id;
+        if ($('#' + submissionId).length == 0) {
+          // We need to create a container for this question
+          $('#question-submissions').prepend('<div id="' + submissionId + '"></div>');
+          fetchResults(submission.id, function() {
+            // Let's collapse all past submissions once the new one renders
+            $('#question-submissions .question-submission').each(function () {
+              var thisSubmissionId = $(this).attr('id');
+              if (thisSubmissionId != submissionId) {
+                $(this).find('.collapse').collapse('hide');
+              }
+            });
+            updateStatus(submission);
+          });
+        } else {
+          // Always update results
+          updateStatus(submission);
 
-        if (submission.grading_job_status == 'graded') {
-          // Check if this state is reflected in the DOM; it's possible this is
-          // just a message from the initial data sync and that we already have
-          // results in the DOM.
-          var status = $('#submission-' + submission.id).data('grading-job-status');
-          var gradingJobId = $('#submission-' + submission.id).data('grading-job-id');
+          if (submission.grading_job_status == 'graded') {
+            // Check if this state is reflected in the DOM; it's possible this is
+            // just a message from the initial data sync and that we already have
+            // results in the DOM.
+            var status = $('#submission-' + submission.id).data('grading-job-status');
+            var gradingJobId = $('#submission-' + submission.id).data('grading-job-id');
 
-          // Ignore jobs that we already have results for, but allow results
-          // from more recent grading jobs to replace the existing ones.
-          if (status != 'graded' || gradingJobId != submission.grading_job_id) {
-            // Let's get results for this job!
-            fetchResults(submission.id);
+            // Ignore jobs that we already have results for, but allow results
+            // from more recent grading jobs to replace the existing ones.
+            if (status != 'graded' || gradingJobId != submission.grading_job_id) {
+              // Let's get results for this job!
+              fetchResults(submission.id);
+            }
           }
         }
       });
     }
 
-    function fetchResults(submissionId) {
+    function fetchResults(submissionId, callback) {
       socket.emit('getResults', {
         variant_id: variantId,
         variant_token: variantToken,
@@ -54,6 +71,7 @@
         question_context: questionContext,
         csrf_token: csrfToken
       }, function(msg) {
+        console.log(msg);
         if (msg.submissionPanel) {
           $('#submission-' + submissionId).replaceWith(function() {
             return $(msg.submissionPanel).fadeIn('slow');
@@ -74,6 +92,10 @@
           $('#question-panel-footer').replaceWith(function() {
             return $(msg.questionPanelFooter).fadeIn('slow');
           });
+        }
+
+        if (callback) {
+          callback();
         }
       });
     }

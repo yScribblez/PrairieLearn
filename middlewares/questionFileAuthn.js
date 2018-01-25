@@ -1,12 +1,11 @@
 const ERR = require('async-stacktrace');
-const hmacSha256 = require('crypto-js/hmac-sha256');
 const _ = require('lodash');
 
-const config = require('../lib/config');
 const error = require('../lib/error');
 const sqldb = require('../lib/sqldb');
 const sqlLoader = require('../lib/sql-loader');
 const logger = require('../lib/logger');
+const { generateAuthToken } = require('../lib/questionFiles');
 
 const sql = sqlLoader.loadSqlEquiv(__filename);
 
@@ -17,12 +16,7 @@ module.exports = function(req, res, next) {
         variant_id,
     } = req.params;
 
-    const tokenData = {
-        user_id,
-        variant_id,
-    };
-    const tokenDataString = JSON.stringify(tokenData);
-    const token = hmacSha256(tokenDataString, config.secretKey).toString();
+    const token = generateAuthToken(user_id, variant_id);
 
     // Makes debugging and developing a bit easier
     if (res.locals.devMode) {

@@ -9,14 +9,22 @@ $(function() {
 
 window.PLFileUpload = function(uuid, options) {
     this.uuid = uuid;
+    this.filesApiUrl = options.filesApiUrl;
     this.files = options.files || [];
     this.acceptedFiles = options.acceptedFiles || [];
 
-    var elementId = '#file-upload-' + uuid;
+    var elementId = '#pl-file-upload-' + uuid;
     this.element = $(elementId);
     if (!this.element) {
         throw new Error('File upload element ' + elementId + ' was not found!');
     }
+
+    // We need to grab the origin on the client and use it to build the upload command
+    this.filesApiUrlElement = this.element.find('.files-api-url-command');
+    var origin = window.location.origin;
+    var uploadUrl = origin + this.filesApiUrl;
+    var commandPrefix = 'tar -czvf - ' + this.acceptedFiles.join(' ') + ' | curl -F "files.tar.gz=@-" ';
+    this.filesApiUrlElement.text(commandPrefix + uploadUrl);
 
     this.syncFilesToHiddenInput();
     this.initializeTemplate();

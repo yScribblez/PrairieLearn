@@ -3,28 +3,51 @@ $(function() {
   var UUID = "{{uuid}}";
 
   new window.PLFileUpload(UUID, {
-    acceptedFiles: {{&file_names}}
-    {{#has_files}}, files: {{&files}}{{/has_files}}
+    filesApiUrl: '{{files_api_url}}',
+    acceptedFiles: {{&file_names}},
+    {{#has_files}}files: {{&files}},{{/has_files}}
   });
+
+  PrairieUtil.initCopyButton('#pl-file-upload-{{uuid}} .copy-button');
 });
 </script>
 
-<div id="file-upload-{{uuid}}">
+<div id="pl-file-upload-{{uuid}}" class="card mb-4">
   <input type="hidden" name="{{name}}">
-  <div class="upload-dropzone">
-    <div class="dz-message">
-      Drop files here or click to upload.
-      <br/>
-      <small>Only the files listed below will be accepted&mdash;others will be ignored.</small>
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" href="#browser-{{element_index}}" aria-controls="browser-{{element_index}}" role="tab" data-toggle="pill">Upload in broswer</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" href="#curl-{{element_index}}" aria-controls="curl-{{element_index}}" role="tab" data-toggle="pill">Upload from terminal</a></li>
+        </ul>
     </div>
-  </div>
-  <div class="messages">
-  </div>
-  <div class="file-upload-status" style="margin-top: 1ex;">
-    <div class="card mb-4">
-      <div class="card-header">Files</div>
-      <ul class="list-group list-group-flush">
-      </ul>
+    <div class="card-body">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="browser-{{element_index}}">
+              <div class="upload-dropzone">
+                <div class="dz-message">
+                  Drop files here or click to upload.
+                  <br/>
+                  <small>Only the files listed below will be accepted&mdash;others will be ignored.</small>
+                </div>
+              </div>
+              <div class="messages">
+              </div>
+              <div class="file-upload-status" style="margin-top: 1ex;">
+                <div class="card">
+                  <div class="card-header">Files</div>
+                  <ul class="list-group list-group-flush">
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="curl-{{element_index}}">
+                <p>Run the command below in your terminal in the directory where your files are located.</p>
+                <p>If this is an autograded question, you'll see results appear below automatically!</p>
+                <pre class="bg-dark text-white rounded p-3 files-api-url-command"></pre>
+                <button type="button" class="btn btn-secondary btn-sm copy-button" data-clipboard-target="#pl-file-upload-{{uuid}} .files-api-url-command">
+                    copy command to clipboard
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

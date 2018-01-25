@@ -109,11 +109,13 @@
   </div>
   <% } %>
 
+  <div id="question-submissions">
   <% if (showSubmissions) { %>
   <% submissions.forEach(function(submission, idx) { %>
     <%- include('submission', {submission: submission, submissionCount: submissions.length, submissionIdx: submissions.length - idx, submissionHtml: submissionHtmls[idx]}); %>
   <% }); %>
   <% } %>
+  </div>
 
   <%- include('externalGradingLiveUpdate'); %>
 
