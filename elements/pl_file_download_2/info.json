@@ -1,0 +1,11 @@
+{
+    "controller": "pl_file_download_2.py",
+    "dependencies": {
+        "nodeModulesScripts": [
+            "clipboard/dist/clipboard.min.js"
+        ],
+        "coreScripts": [
+            "PrairieUtil.js"
+        ]
+    }
+}

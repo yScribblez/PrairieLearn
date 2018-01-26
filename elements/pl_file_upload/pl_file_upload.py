@@ -54,6 +54,7 @@ def render(element_html, element_index, data):
         'name': answer_name,
         'file_names': file_names_json,
         'uuid': uuid,
+        'element_index': element_index,
         'files_api_url': data['options']['files_api_url']
     }
 

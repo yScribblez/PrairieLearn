@@ -8,7 +8,9 @@ $(function() {
     {{#has_files}}files: {{&files}},{{/has_files}}
   });
 
-  PrairieUtil.initCopyButton('#pl-file-upload-{{uuid}} .copy-button');
+  PrairieUtil.initCopyButton('#pl-file-upload-{{uuid}} .copy-button', {
+    buttonClass: 'btn-light',
+  });
 });
 </script>
 
@@ -16,7 +18,7 @@ $(function() {
   <input type="hidden" name="{{name}}">
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs" role="tablist">
-            <li class="nav-item" role="presentation"><a class="nav-link active" href="#browser-{{element_index}}" aria-controls="browser-{{element_index}}" role="tab" data-toggle="pill">Upload in broswer</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link active" href="#browser-{{element_index}}" aria-controls="browser-{{element_index}}" role="tab" data-toggle="pill">Upload in browser</a></li>
             <li class="nav-item" role="presentation"><a class="nav-link" href="#curl-{{element_index}}" aria-controls="curl-{{element_index}}" role="tab" data-toggle="pill">Upload from terminal</a></li>
         </ul>
     </div>
@@ -43,10 +45,12 @@ $(function() {
             <div role="tabpanel" class="tab-pane" id="curl-{{element_index}}">
                 <p>Run the command below in your terminal in the directory where your files are located.</p>
                 <p>If this is an autograded question, you'll see results appear below automatically!</p>
-                <pre class="bg-dark text-white rounded p-3 files-api-url-command"></pre>
-                <button type="button" class="btn btn-secondary btn-sm copy-button" data-clipboard-target="#pl-file-upload-{{uuid}} .files-api-url-command">
-                    copy command to clipboard
-                </button>
+                <div class="bg-dark text-white rounded p-3 mb-2">
+                    <button type="button" class="btn btn-light btn-sm copy-button mb-2" data-clipboard-target="#pl-file-upload-{{uuid}} .files-api-url-command">
+                        copy command to clipboard
+                    </button>
+                    <pre class="files-api-url-command text-white mb-0"></pre>
+                </div>
             </div>
         </div>
     </div>

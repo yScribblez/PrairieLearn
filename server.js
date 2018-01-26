@@ -101,20 +101,15 @@ app.use('/pl/azure_callback', require('./pages/authCallbackAzure/authCallbackAzu
 
 // We need to bypass the usual auth/cors/etc checks for the special files endpoints
 // We also unfortunately need separate routes for students and instructors
-const authSkipper = (req, res, next) => {
-    res.locals.skip_auth = true;
-    res.locals.skip_csrf = true;
-    next();
-};
-app.use('/pl/auth/:user_id/:auth_token/instructor/:variant_id/files', [
-    authSkipper,
+app.use('/pl/auth/:user_id/:auth_token/instructor/:course_instance_id/:variant_id/files', [
+    (req, res, next) => {res.locals.is_instructor = true; next();},
     require('./middlewares/questionFileAuthn'),
     require('./middlewares/authzCourseInstance'),
+    require('./middlewares/authzCourseInstanceHasInstructorView'),
     require('./middlewares/selectAndAuthzInstructorQuestion'),
     require('./pages/questionFiles/questionFiles'),
 ]);
 app.use('/pl/auth/:user_id/:auth_token/:variant_id/files', [
-    authSkipper,
     require('./middlewares/questionFileAuthn'),
     require('./middlewares/authzCourseInstance'),
     require('./middlewares/selectAndAuthzInstanceQuestion'),

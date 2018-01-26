@@ -12,7 +12,7 @@ var sql = sqlLoader.loadSqlEquiv(__filename);
 module.exports = function(req, res, next) {
     var params = {
         authn_user_id: res.locals.authn_user.user_id,
-        course_instance_id: res.locals.course_instance_id || req.params.course_instance_id,
+        course_instance_id: req.params.course_instance_id || res.locals.course_instance_id,
         is_administrator: res.locals.is_administrator,
         req_date: res.locals.req_date,
         ip: req.headers['x-forwarded-for'] || req.ip,

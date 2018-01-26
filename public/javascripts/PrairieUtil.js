@@ -16,6 +16,7 @@
         options = options || {};
 
         var successMessage = options.success || 'copied to clipboard!';
+        var buttonClass = options.buttonClass || 'btn-secondary';
 
         var clipboard = new Clipboard(selector);
         var clicked = false;
@@ -28,13 +29,13 @@
             var button = $(e.trigger);
 
             button.fadeOut(200, function() {
-                button.removeClass('btn-secondary').addClass('btn-success');
+                button.removeClass(buttonClass).addClass('btn-success');
                 button.text(successMessage);
             }).fadeIn(200);
 
             setTimeout(function() {
                 button.fadeOut(200, function() {
-                    button.removeClass('btn-success').addClass('btn-secondary');
+                    button.removeClass('btn-success').addClass(buttonClass);
                     button.text(contents);
                 }).fadeIn(200, function() {
                     clicked = false;

@@ -40,6 +40,14 @@ router.get('/*', function(req, res, _next) {
 });
 
 function processSubmission(req, res, files, callback) {
+    if (res.locals.is_instructor) {
+        processSubmissionInstructor(req, res, files, callback);
+    } else {
+        processSubmissionStudent(req, res, files, callback);
+    }
+}
+
+function processSubmissionStudent(req, res, files, callback) {
     if (!res.locals.assessment_instance.open) return callback(error.make(400, 'assessment_instance is closed'));
     if (!res.locals.instance_question.open) return callback(error.make(400, 'instance_question is closed'));
     if (res.locals.question.type !== 'Freeform') {
@@ -64,6 +72,37 @@ function processSubmission(req, res, files, callback) {
             submitted_answer: submittedAnswer,
             credit: res.locals.authz_result.credit,
             mode: res.locals.authz_data.mode,
+        };
+
+        question.saveAndGradeSubmission(submission, variant, res.locals.question, res.locals.course, (err) => {
+            if (ERR(err, callback)) return;
+            externalGradingSocket.variantUpdated(res.locals.variant_id);
+            callback(null, submission.variant_id);
+        });
+    });
+}
+
+function processSubmissionInstructor(req, res, files, callback) {
+    if (res.locals.question.type !== 'Freeform') {
+        // TODO do something sensible?
+        return callback(null);
+    }
+    sqldb.callOneRow('variants_ensure_question', [res.locals.variant_id, res.locals.question.id], (err, result) => {
+        if (ERR(err, callback)) return;
+        const variant = result.rows[0];
+
+        // Filter out any unexpected files for this question
+        const filteredFiles = files.filter((file) => {
+            return variant.params._required_file_names.indexOf(file.name) !== -1;
+        });
+
+        const submittedAnswer = {
+            _files: filteredFiles,
+        };
+        const submission = {
+            variant_id: res.locals.variant_id,
+            auth_user_id: res.locals.authn_user.user_id,
+            submitted_answer: submittedAnswer,
         };
 
         question.saveAndGradeSubmission(submission, variant, res.locals.question, res.locals.course, (err) => {

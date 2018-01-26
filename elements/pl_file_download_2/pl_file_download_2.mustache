@@ -1,0 +1,43 @@
+<script>
+$(function() {
+  var UUID = "{{uuid}}";
+
+  // Now that we're on the client, let's use our origin to generate a CURL command
+  var downloadUrl = window.location.origin + '{{files_api_url}}' + '/{{file_name}}';
+  var command = 'curl ' + downloadUrl + ' > {{file_name}}';
+  $('#pl-file-download-2-{{uuid}} .files-api-url-command').text(command);
+
+  PrairieUtil.initCopyButton('#pl-file-download-2-{{uuid}} .copy-button', {
+    buttonClass: 'btn-light',
+  });
+});
+</script>
+
+<div id="pl-file-download-2-{{uuid}}" class="card mb-4">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" role="tablist">
+            <li class="nav-item" role="presentation"><a class="nav-link active" href="#browser-{{element_index}}" aria-controls="browser-{{element_index}}" role="tab" data-toggle="pill">Download from browser</a></li>
+            <li class="nav-item" role="presentation"><a class="nav-link" href="#curl-{{element_index}}" aria-controls="curl-{{element_index}}" role="tab" data-toggle="pill">Download in terminal</a></li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="browser-{{element_index}}">
+                <div class="mb-2">
+                    <a class="btn btn-primary" href="{{file_url}}" download>Download {{file_name}}</a>
+                </div>
+                {{&child_html}}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="curl-{{element_index}}">
+                <p>Run the command below in your terminal in the directory where you'd like to download <code>{{file_name}}</code>.</p>
+                <div class="bg-dark text-white rounded p-3 mb-2">
+                    <button type="button" class="btn btn-light btn-sm copy-button mb-2" data-clipboard-target="#pl-file-download-2-{{uuid}} .files-api-url-command">
+                        copy command to clipboard
+                    </button>
+                    <pre class="files-api-url-command text-white mb-0"></pre>
+                </div>
+                {{&child_html}}
+            </div>
+        </div>
+    </div>
+</div>
