@@ -1,10 +1,8 @@
 [id^=pl-file-upload] .upload-dropzone {
   position: relative;
   min-height: 15ex;
-  border-radius: 4px;
   background-color: #FAFDFF;
-  border: 2px dashed #0087F7;
-  margin-bottom: 20px;
+  border: 2px dashed #5cb5ff;
 }
 [id^=pl-file-upload] .upload-dropzone.dz-clickable {
   cursor: pointer;
@@ -62,7 +60,7 @@
 
 [id^=pl-file-upload] .file-preview-icon {
   margin-left: 10px;
-  transition: all 400ms;
+  transition: transform 400ms;
 }
 
 [id^=pl-file-upload] .file-status-container:not(.collapsed) .file-preview-icon {

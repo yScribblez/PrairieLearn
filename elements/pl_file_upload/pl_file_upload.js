@@ -63,7 +63,7 @@ window.PLFileUpload.prototype.initializeTemplate = function() {
                 that.saveSubmittedFile(file.name, base64FileData);
                 that.renderFileList();
                 // Show the preview for the newly-uploaded file
-                that.element.find('li[data-file="' + file.name + '"] .file-preview').addClass('in');
+                that.element.find('li[data-file="' + file.name + '"] .file-preview').collapse('show');
             };
 
             reader.readAsDataURL(file);
@@ -126,7 +126,7 @@ window.PLFileUpload.prototype.getSubmittedFileContents = function(name) {
 * Imperative DOM manipulations can rot in hell.
 */
 window.PLFileUpload.prototype.renderFileList = function() {
-    var $fileList = this.element.find('.file-upload-status .card ul.list-group');
+    var $fileList = this.element.find('.file-upload-status');
 
     // Save which cards are currently expanded
     var expandedFiles = [];

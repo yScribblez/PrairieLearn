@@ -22,7 +22,7 @@ $(function() {
             <li class="nav-item" role="presentation"><a class="nav-link" href="#curl-{{element_index}}" aria-controls="curl-{{element_index}}" role="tab" data-toggle="pill">Upload from terminal</a></li>
         </ul>
     </div>
-    <div class="card-body">
+    <!--<div class="card-body">-->
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="browser-{{element_index}}">
               <div class="upload-dropzone">
@@ -34,15 +34,10 @@ $(function() {
               </div>
               <div class="messages">
               </div>
-              <div class="file-upload-status" style="margin-top: 1ex;">
-                <div class="card">
-                  <div class="card-header">Files</div>
-                  <ul class="list-group list-group-flush">
-                  </ul>
-                </div>
-              </div>
+              <ul class="list-group list-group-flush file-upload-status">
+              </ul>
             </div>
-            <div role="tabpanel" class="tab-pane" id="curl-{{element_index}}">
+            <div role="tabpanel" class="tab-pane card-body" id="curl-{{element_index}}">
                 <p>Run the command below in your terminal in the directory where your files are located.</p>
                 <p>If this is an autograded question, you'll see results appear below automatically!</p>
                 <div class="bg-dark text-white rounded p-3 mb-2">
@@ -53,5 +48,5 @@ $(function() {
                 </div>
             </div>
         </div>
-    </div>
+    <!--</div>-->
 </div>
