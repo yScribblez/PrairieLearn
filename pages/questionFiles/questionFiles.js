@@ -74,9 +74,9 @@ function processSubmissionStudent(req, res, files, callback) {
             mode: res.locals.authz_data.mode,
         };
 
-        question.saveAndGradeSubmission(submission, variant, res.locals.question, res.locals.course, (err) => {
+        question.saveAndGradeSubmission(submission, variant, res.locals.question, res.locals.course, (err, submission_id) => {
             if (ERR(err, callback)) return;
-            externalGradingSocket.variantUpdated(res.locals.variant_id);
+            externalGradingSocket.variantSubmissionCreated(res.locals.variant_id, submission_id);
             callback(null, submission.variant_id);
         });
     });
@@ -105,9 +105,9 @@ function processSubmissionInstructor(req, res, files, callback) {
             submitted_answer: submittedAnswer,
         };
 
-        question.saveAndGradeSubmission(submission, variant, res.locals.question, res.locals.course, (err) => {
+        question.saveAndGradeSubmission(submission, variant, res.locals.question, res.locals.course, (err, submission_id) => {
             if (ERR(err, callback)) return;
-            externalGradingSocket.variantUpdated(res.locals.variant_id);
+            externalGradingSocket.variantSubmissionCreated(res.locals.variant_id, submission_id);
             callback(null, submission.variant_id);
         });
     });

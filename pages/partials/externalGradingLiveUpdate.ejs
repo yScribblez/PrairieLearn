@@ -16,49 +16,74 @@
     });
 
     socket.emit('init', {variant_id: variantId, variant_token: variantToken}, function(msg) {
-      handleStatusChange(msg);
+      handleStatusChange(msg.submissions);
     });
 
-    socket.on('change:status', function(msg) {
-      handleStatusChange(msg);
+    socket.on('submission:new', function(msg) {
+      handleNewSubmission(msg.submission);
     });
 
-    function handleStatusChange(msg) {
-      msg.submissions.forEach(function(submission) {
-        // Check if this submission isn't in the DOM yet and add it if it is
-        var submissionId = 'submission-' + submission.id;
-        if ($('#' + submissionId).length == 0) {
-          // We need to create a container for this question
-          $('#question-submissions').prepend('<div id="' + submissionId + '"></div>');
-          fetchResults(submission.id, function() {
-            // Let's collapse all past submissions once the new one renders
-            $('#question-submissions .question-submission').each(function () {
-              var thisSubmissionId = $(this).attr('id');
-              if (thisSubmissionId != submissionId) {
-                $(this).find('.collapse').collapse('hide');
-              }
+    socket.on('submission:status', function(msg) {
+      handleStatusChange(msg.submissions);
+    });
+
+    function handleNewSubmission(submission) {
+      var submissionId = 'submission-' + submission.id;
+      // We need to create a container for this question
+      $('#question-submissions').prepend('<div id="' + submissionId + '" data-new="true"></div>');
+      fetchResults(submission.id, function() {
+        // Let's collapse all past submissions once the new one renders
+        $('#question-submissions .question-submission').each(function () {
+          var thisSubmissionId = $(this).attr('id');
+          if (thisSubmissionId != submissionId) {
+            $(this).find('.collapse').collapse('hide');
+          }
+        });
+        // Scroll new result into view if the submissions panel isn't in view
+        var viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        var submissionsOffset = $('#question-submissions').offset();
+        var windowScrollTop = $(window).scrollTop();
+        if (windowScrollTop + viewportHeight < submissionsOffset.top) {
+          setTimeout(function() {
+            $('html, body').animate({
+              scrollTop: $('#' + submissionId).offset().top - 50,
             });
-            updateStatus(submission);
-          });
-        } else {
-          // Always update results
-          updateStatus(submission);
+          }, 0);
+        }
 
-          if (submission.grading_job_status == 'graded') {
-            // Check if this state is reflected in the DOM; it's possible this is
-            // just a message from the initial data sync and that we already have
-            // results in the DOM.
-            var status = $('#submission-' + submission.id).data('grading-job-status');
-            var gradingJobId = $('#submission-' + submission.id).data('grading-job-id');
+        // Sync status into the DOM
+        updateStatus(submission);
+      });
+    }
 
-            // Ignore jobs that we already have results for, but allow results
-            // from more recent grading jobs to replace the existing ones.
-            if (status != 'graded' || gradingJobId != submission.grading_job_id) {
-              // Let's get results for this job!
-              fetchResults(submission.id);
-            }
+    function handleStatusChange(submissions) {
+      submissions.forEach(function(submission) {
+        // Always update results
+        updateStatus(submission);
+
+        if (submission.grading_job_status == 'graded') {
+          // Check if this state is reflected in the DOM; it's possible this is
+          // just a message from the initial data sync and that we already have
+          // results in the DOM.
+          var status = $('#submission-' + submission.id).data('grading-job-status');
+          var gradingJobId = $('#submission-' + submission.id).data('grading-job-id');
+
+          // Ignore jobs that we already have results for, but allow results
+          // from more recent grading jobs to replace the existing ones.
+          if (status != 'graded' || gradingJobId != submission.grading_job_id) {
+            // Let's get results for this job!
+            fetchResults(submission.id);
           }
         }
+      });
+    }
+
+    function fadeAndReplace(selector, newContent) {
+      var target = $(selector);
+      target.fadeOut('fast', function() {
+        target.replaceWith(function() {
+          return $(newContent).hide().fadeIn('fast');
+        });
       });
     }
 
@@ -71,27 +96,26 @@
         question_context: questionContext,
         csrf_token: csrfToken
       }, function(msg) {
-        console.log(msg);
         if (msg.submissionPanel) {
-          $('#submission-' + submissionId).replaceWith(function() {
-            return $(msg.submissionPanel).fadeIn('slow');
-          });
-          resultsLoaded = true;
+          var target = $('#submission-' + submissionId);
+          if (target.data('new') == true) {
+            // The panel hasn't actually had content rendered yet.
+            // Skip the fadeout and render immediately
+            target.replaceWith(function() {
+              return $(msg.submissionPanel).hide().fadeIn('fast');
+            });
+          } else {
+            fadeAndReplace('#submission-' + submissionId, msg.submissionPanel);
+          }
         }
         if (msg.questionScorePanel) {
-          $('#question-score-panel').replaceWith(function() {
-            return $(msg.questionScorePanel).fadeIn('slow');
-          });
+          fadeAndReplace('#question-score-panel', msg.questionScorePanel);
         }
         if (msg.assessmentScorePanel) {
-          $('#assessment-score-panel').replaceWith(function() {
-            return $(msg.assessmentScorePanel).fadeIn('slow');
-          });
+          fadeAndReplace('#assessment-score-panel', msg.assessmentScorePanel);
         }
         if (msg.questionPanelFooter) {
-          $('#question-panel-footer').replaceWith(function() {
-            return $(msg.questionPanelFooter).fadeIn('slow');
-          });
+          fadeAndReplace('#question-panel-footer', msg.questionPanelFooter);
         }
 
         if (callback) {
