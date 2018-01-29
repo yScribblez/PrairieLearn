@@ -55,7 +55,8 @@ def render(element_html, element_index, data):
         'file_names': file_names_json,
         'uuid': uuid,
         'element_index': element_index,
-        'files_api_url': data['options']['files_api_url']
+        'files_api_url': data['options']['files_api_url'],
+        'enable_terminal_uploads': pl.get_boolean_attrib(element, 'enable_terminal_uploads', False)
     }
 
     files = data['submitted_answers'].get('_files', None)
