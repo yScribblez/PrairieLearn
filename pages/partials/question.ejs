@@ -3,57 +3,8 @@
   <div hidden="true" class="question-data"><%= questionJsonBase64 %></div>
   <% } %>
 
-  <% issues.forEach(function(issue, iIssue) { %>
-  <div class="card mb-4">
-    <div class="card-header bg-danger text-white">
-      <% if (issue.manually_reported) { %>
-      Manually reported issue
-      <% } else { %>
-      Issue
-      <% } %>
-    </div>
-
-    <table class="table table-sm table-hover two-column-description">
-      <tbody>
-        <% if (devMode || authz_data.has_instructor_view) { %>
-        <tr><th>Student:</th><td><%= issue.user_name || '-'  %> (<a href="mailto:<%= issue.user_uid  || '-' %>?subject=Reported%20PrairieLearn%20Issue&body=Hello%20<%= issue.user_name %>,%0A%0ARegarding%20the%20issue%20of:%0A%0A%22<%= issue.student_message || '-' %>%22%0A%0AWe've..."><%= issue.user_uid || '-' %></a>)</td></tr>
-        <tr><th>Student message:</th><td><%= issue.student_message %></td></tr>
-        <tr><th>Instructor message:</th><td><%= issue.instructor_message %></td></tr>
-        <% } else { %>
-        <tr><th>Message:</th><td><%= issue.student_message %></td></tr>
-        <% } %>
-        <tr><th>ID:</th><td><%= issue.id %></td></tr>
-        <tr><th>Date:</th><td><%= issue.formatted_date %></td></tr>
-      </tbody>
-    </table>
-
-    <% if (devMode || authz_data.has_instructor_view || is_administrator) { %>
-    <div class="card-body border border-bottom-0 border-left-0 border-right-0">
-      <% if (is_administrator && issue.system_data.courseErrData ) { %>
-      <p><strong>Console log:</strong>
-        <pre class="bg-dark text-white rounded p-3"><%= issue.system_data.courseErrData.outputBoth %></pre>
-        <% } %>
-      <p><strong>Associated data:</strong>
-        <a class="btn btn-xs btn-secondary" role="button" data-toggle="collapse" href="#issue-course-data-<%= iIssue %>" aria-expanded="false" aria-controls="#issue-course-data-<%= iIssue %>">
-          Show/hide
-        </a>
-      </p>
-      <div class="collapse" id="issue-course-data-<%= iIssue %>">
-        <pre class="bg-dark text-white rounded p-3"><%= JSON.stringify(issue.course_data, null, '    ') %></pre>
-      </div>
-      <% if (is_administrator) { %>
-      <p><strong>System data:</strong>
-        <a class="btn btn-xs btn-secondary" role="button" data-toggle="collapse" href="#issue-system-data-<%= iIssue %>" aria-expanded="false" aria-controls="#issue-system-data-<%= iIssue %>">
-          Show/hide
-        </a>
-      </p>
-      <div class="collapse" id="issue-system-data-<%= iIssue %>">
-        <pre class="bg-dark text-white rounded p-3"><%= JSON.stringify(issue.system_data, null, '    ') %></pre>
-      </div>
-      <% } %>
-    </div>
-    <% } %>
-  </div>
+  <% issues.forEach(function(issue, index) { %>
+    <%- include('issue', { issue: issue, issueIndex: index }) %>
   <% }); %>
 
 

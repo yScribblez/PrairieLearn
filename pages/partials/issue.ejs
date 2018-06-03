@@ -1,0 +1,55 @@
+<div class="card mb-4">
+  <div class="card-header bg-danger text-white">
+    <% if (issue.manually_reported) { %>
+    Manually reported issue
+    <% } else { %>
+    Issue
+    <% } %>
+  </div>
+
+  <table class="table table-sm two-column-description">
+    <tbody>
+      <% if (devMode || authz_data.has_instructor_view) { %>
+      <tr><th>Student</th><td><%= issue.user_name || '-'  %> (<a href="mailto:<%= issue.user_uid  || '-' %>?subject=Reported%20PrairieLearn%20Issue&body=Hello%20<%= issue.user_name %>,%0A%0ARegarding%20the%20issue%20of:%0A%0A%22<%= issue.student_message || '-' %>%22%0A%0AWe've..."><%= issue.user_uid || '-' %></a>)</td></tr>
+      <tr><th>Student message</th><td><%= issue.student_message %></td></tr>
+      <tr><th>Instructor message</th><td><%= issue.instructor_message %></td></tr>
+      <% } else { %>
+      <tr><th>Message</th><td><%= issue.student_message %></td></tr>
+      <% } %>
+      <tr><th>ID</th><td><%= issue.id %></td></tr>
+      <tr><th>Date</th><td><%= issue.formatted_date %></td></tr>
+    </tbody>
+  </table>
+
+  <% if (devMode || authz_data.has_instructor_view || is_administrator) { %>
+  <% /*if (is_administrator && issue.system_data.courseErrData ) {*/ %>
+  <div class="p-1 border border-bottom-0 border-left-0 border-right-0">
+    <strong class="d-block">Console log</strong>
+    <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= /*issue.system_data.courseErrData.outputBoth*/ %></pre>
+  </div>
+  <div class="p-1 border border-bottom-0 border-left-0 border-right-0">
+    <div class="d-flex align-items-center">
+      <strong class="mr-2">Associated data</strong>
+      <a class="btn btn-xs btn-secondary" role="button" data-toggle="collapse" href="#issue-course-data-<%= issueIndex %>" aria-expanded="false" aria-controls="#issue-course-data-<%= issueIndex %>">
+        Show/hide
+      </a>
+    </div>
+    <div class="collapse" id="issue-course-data-<%= issueIndex %>">
+      <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= JSON.stringify(issue.course_data, null, '    ') %></pre>
+    </div>
+  </div>
+  <% if (is_administrator) { %>
+  <div class="p-1 border border-bottom-0 border-left-0 border-right-0">
+    <div class="d-flex align-items-center">
+      <strong class="mr-2">System data</strong>
+      <a class="btn btn-xs btn-secondary" role="button" data-toggle="collapse" href="#issue-system-data-<%= issueIndex %>" aria-expanded="false" aria-controls="#issue-system-data-<%= issueIndex %>">
+        Show/hide
+      </a>
+    </div>
+    <div class="collapse" id="issue-system-data-<%= issueIndex %>">
+      <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= JSON.stringify(issue.system_data, null, '    ') %></pre>
+    </div>
+  </div>
+  <% } %>
+  <% } %>
+</div>
