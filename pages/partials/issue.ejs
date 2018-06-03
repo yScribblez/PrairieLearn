@@ -22,11 +22,12 @@
   </table>
 
   <% if (devMode || authz_data.has_instructor_view || is_administrator) { %>
-  <% /*if (is_administrator && issue.system_data.courseErrData ) {*/ %>
+  <% if (is_administrator && issue.system_data.courseErrData) { %>
   <div class="p-1 border border-bottom-0 border-left-0 border-right-0">
     <strong class="d-block">Console log</strong>
-    <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= /*issue.system_data.courseErrData.outputBoth*/ %></pre>
+    <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= issue.system_data.courseErrData.outputBoth %></pre>
   </div>
+  <% } %>
   <div class="p-1 border border-bottom-0 border-left-0 border-right-0">
     <div class="d-flex align-items-center">
       <strong class="mr-2">Associated data</strong>
