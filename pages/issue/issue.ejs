@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <%- include('../partials/navbar', {navPage: ''}); %>
+    <div id="content" class="container">
+      <%- include('../partials/issue', { issue: issue, issueIndex: 1 }); %>
+      <h3>Discussion</h3>
+      <div class="card mb-4">
+        <div class="card-header bg-light p-2 d-flex align-items-center">
+          <span>
+            <strong>Nathan Walters</strong>
+            <span class="text-muted">commented 12 days ago</span>
+          </span>
+          <span class="badge badge-primary ml-auto">Instructor</span>
+        </div>
+        <div class="card-body p-2">I respectfully disagree. I believe that this is fair.</div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-header bg-light p-2 d-flex align-items-center">
+          <span>
+            <strong>Eddie Huang</strong>
+            <span class="text-muted">commented 5 days ago</span>
+          </span>
+          <span class="badge badge-success ml-auto">TA</span>
+        </div>
+        <div class="card-body p-2">Seconded; I wrote this question, and it seems OK to me.</div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-header bg-light p-2 d-flex align-items-center">
+          <span>
+            <strong>Josh Byster</strong>
+            <span class="text-muted">commented 30 minutes ago</span>
+          </span>
+          <span class="badge badge-light ml-auto">Student</span>
+        </div>
+        <div class="card-body p-2">Ok, thanks for the reply!</div>
+      </div>
+
+      <form method="POST">
+        <div class="form-group">
+          <textarea class="form-control" rows="5" name="comment" placeholder="Write a comment"></textarea>
+        </div>
+        <input type="hidden" name="__csrf_token" value="<%= __csrf_token %>">
+        <div class="form-group text-right mb-2">
+          <button class="btn btn-light" name="__action" value="close_and_comment">Comment and close</button>
+          <button class="btn btn-success" name="__action" value="comment">Comment</button>
+        </div>
+      </form>
+    </div>
+  </body>
+  </html>
