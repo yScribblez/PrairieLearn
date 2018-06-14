@@ -5,6 +5,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const mustache = require('mustache');
 const cheerio = require('cheerio');
+const { mjpage: mathJaxPage } = require('mathjax-node-page');
 
 const logger = require('../lib/logger');
 const codeCaller = require('../lib/code-caller');
@@ -448,7 +449,15 @@ module.exports = {
                     }
                 }
 
-                callback(null, courseIssues, data, $.html(), fileData, renderedElementNames);
+                // One more pass for MathJax rendering
+                const origHtml = $.html();
+                mathJaxPage(origHtml, {
+                    format: ['TeX'],
+                    output: 'svg',
+                    singleDollars: true,
+                }, {}, (output) => {
+                    callback(null, courseIssues, data, output, fileData, renderedElementNames);
+                });
             });
         });
     },
