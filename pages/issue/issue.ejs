@@ -8,6 +8,18 @@
     <div id="content" class="container">
       <%- include('../partials/issue', { issue: issue, issueIndex: 1 }); %>
       <h3>Discussion</h3>
+      <% comments.forEach(comment => { %>
+        <div class="card mb-4">
+          <div class="card-header bg-light p-2 d-flex align-items-center">
+            <span>
+              <strong><%= comment.user_name %></strong>
+              <span class="text-muted">commented <%= comment.relative_date %></span>
+            </span>
+            <!--<span class="badge badge-primary ml-auto">Instructor</span>-->
+          </div>
+          <div class="card-body p-2"><%= comment.comment %></div>
+        </div>
+      <% }); %>
       <div class="card mb-4">
         <div class="card-header bg-light p-2 d-flex align-items-center">
           <span>
@@ -38,17 +50,20 @@
         </div>
         <div class="card-body p-2">Ok, thanks for the reply!</div>
       </div>
-
-      <form method="POST">
-        <div class="form-group">
-          <textarea class="form-control" rows="5" name="comment" placeholder="Write a comment"></textarea>
+      <div class="card mb-4">
+        <div class="card-body p-2">
+          <form method="POST">
+            <div class="form-group">
+              <textarea class="form-control" rows="5" name="comment" placeholder="Write a comment"></textarea>
+            </div>
+            <input type="hidden" name="__csrf_token" value="<%= __csrf_token %>">
+            <div class="form-group text-right mb-0">
+              <button class="btn btn-light" name="__action" value="close_and_comment">Comment and close</button>
+              <button class="btn btn-success" name="__action" value="comment">Comment</button>
+            </div>
+          </form>
         </div>
-        <input type="hidden" name="__csrf_token" value="<%= __csrf_token %>">
-        <div class="form-group text-right mb-2">
-          <button class="btn btn-light" name="__action" value="close_and_comment">Comment and close</button>
-          <button class="btn btn-success" name="__action" value="comment">Comment</button>
-        </div>
-      </form>
+      </div>
     </div>
   </body>
   </html>
