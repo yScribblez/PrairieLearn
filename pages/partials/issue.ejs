@@ -1,3 +1,4 @@
+<!--
 <div class="card mb-4">
   <div class="card-header bg-danger text-white">
     <% if (issue.manually_reported) { %>
@@ -52,5 +53,93 @@
     </div>
   </div>
   <% } %>
+  <% } %>
+</div>
+-->
+<div class="card mb-4">
+  <div class="card-header bg-danger text-white">
+    <div>
+      <span class="mr-2"><%= issue.user_name || '-'  %></span>
+      <span class="text-light text-muted">(<a class="text-light text-muted" href="mailto:<%= issue.user_uid %>"><%= issue.user_uid || '-' %></a>)</span>
+    </div>
+    <small>
+      <% if (issue.manually_reported) { %>
+      Manually reported issue
+      <% } else { %>
+      Issue
+      <% } %>
+    </small>
+  </div>
+  <div class="card-body">
+    <% if (devMode || authz_data.has_instructor_view) { %>
+    <small class="text-muted">
+      <i class="fas fa-user-graduate fa-fw"></i>
+      Student message
+    </small>
+    <div><%= issue.student_message %></div>
+    <hr class="mt-2 mb-2">
+    <small class="text-muted">
+      <i class="fas fa-chalkboard-teacher fa-fw"></i>
+      Instructor message
+    </small>
+    <div><%= issue.instructor_message %></div>
+    <% } else { %>
+    <div>Message</div>
+    <div><%= issue.student_message %></div>
+    <% } %>
+    <% if (devMode || authz_data.has_instructor_view || is_administrator) { %>
+    <% if (is_administrator && issue.system_data.courseErrData) { %>
+    <hr class="mt-2 mb-2">
+    <div class="d-flex align-items-center">
+      <small class="text-muted d-block mr-2">
+        <i class="fas fa-terminal fa-fw"></i>
+        Console log
+      </small>
+      <a class="btn btn-xs btn-secondary" role="button" data-toggle="collapse" href="#issue-console-log-<%= issueIndex %>" aria-expanded="false" aria-controls="#issue-console-log-<%= issueIndex %>">
+        Show/hide
+      </a>
+    </div>
+    <div class="collapse" id="issue-console-log-<%= issueIndex %>">
+      <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= issue.system_data.courseErrData.outputBoth %></pre>
+    </div>
+    <% } %>
+    <hr class="mt-2 mb-2">
+    <div class="d-flex align-items-center">
+      <small class="text-muted d-block mr-2">
+        <i class="fas fa-info-circle fa-fw"></i>
+        Associated data
+      </small>
+      <a class="btn btn-xs btn-secondary" role="button" data-toggle="collapse" href="#issue-course-data-<%= issueIndex %>" aria-expanded="false" aria-controls="#issue-course-data-<%= issueIndex %>">
+        Show/hide
+      </a>
+    </div>
+    <div class="collapse" id="issue-course-data-<%= issueIndex %>">
+      <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= JSON.stringify(issue.course_data, null, '    ') %></pre>
+    </div>
+    <% if (is_administrator) { %>
+    <hr class="mt-2 mb-2">
+    <div class="d-flex align-items-center">
+      <small class="text-muted d-block mr-2">
+        <i class="fas fa-cog fa-fw"></i>
+        System data
+      </small>
+      <a class="btn btn-xs btn-secondary" role="button" data-toggle="collapse" href="#issue-system-data-<%= issueIndex %>" aria-expanded="false" aria-controls="#issue-system-data-<%= issueIndex %>">
+        Show/hide
+      </a>
+    </div>
+    <div class="collapse" id="issue-system-data-<%= issueIndex %>">
+      <pre class="bg-dark text-white rounded p-3 mt-1 mb-0"><%= JSON.stringify(issue.system_data, null, '    ') %></pre>
+    </div>
+    <% } %>
+    <% } %>
+  </div>
+  <% if (true || typeof show_footer !== 'undefined' && show_footer) { %>
+  <div class="card-footer d-flex">
+    <a class="btn btn-sm btn-primary ml-auto" href="<%= urlPrefix %>/issue/<%= issue.id %>">
+      View comments
+      <i class="fas fa-comment-alt ml-4"></i>
+      1234
+    </a>
+  </div>
   <% } %>
 </div>

@@ -258,6 +258,8 @@ app.use('/pl/course_instance/:course_instance_id/instructor/jobSequence', requir
 app.use('/pl/course_instance/:course_instance_id/instructor/loadFromDisk', require('./pages/instructorLoadFromDisk/instructorLoadFromDisk'));
 app.use('/pl/course_instance/:course_instance_id/instructor/course', require('./middlewares/authzCourseInstanceHasCourseView'));
 app.use('/pl/course_instance/:course_instance_id/instructor/course', require('./pages/courseOverview/courseOverview'));
+app.use('/pl/course_instance/:course_instance_id/instructor/issue', require('./pages/issue/issue'));
+
 
 // clientFiles
 app.use('/pl/course_instance/:course_instance_id/instructor/clientFilesCourse', require('./pages/clientFilesCourse/clientFilesCourse'));
@@ -321,6 +323,7 @@ app.use('/pl/course_instance/:course_instance_id/instance_question/:instance_que
     require('./pages/studentInstanceQuestionExam/studentInstanceQuestionExam'),
 ]);
 app.use('/pl/course_instance/:course_instance_id/report_cheating', require('./pages/studentReportCheating/studentReportCheating'));
+app.use('/pl/course_instance/:course_instance_id/issue', require('./pages/issue/issue'));
 if (config.devMode) {
     app.use('/pl/course_instance/:course_instance_id/loadFromDisk', require('./pages/instructorLoadFromDisk/instructorLoadFromDisk'));
     app.use('/pl/course_instance/:course_instance_id/jobSequence', require('./middlewares/authzCourseInstanceAuthnHasInstructorView'));
@@ -369,13 +372,6 @@ app.use('/pl/course_instance/:course_instance_id/instance_question/:instance_que
     require('./middlewares/studentAssessmentAccess'),
     require('./pages/legacyQuestionText/legacyQuestionText'),
 ]);
-
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-// Shared pages //////////////////////////////////////////////////////
-//
-app.use('/pl/course_instance/:course_instance_id/issue', require('./pages/issue/issue'));
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
