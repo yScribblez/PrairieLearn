@@ -4,6 +4,7 @@ const request = require('request-promise-native');
 const cheerio = require('cheerio');
 const assert = require('assert');
 const yargs = require('yargs');
+const cluster = require('cluster');
 
 const config = require('../lib/config');
 const csrf = require('../lib/csrf');
@@ -34,6 +35,12 @@ const argv = yargs
           default: 1,
           type: 'array',
       })
+      .option('processes', {
+          alias: 'p',
+          describe: 'Number of processes',
+          default: 1,
+          type: 'number'
+      })
       .option('delay', {
           alias: 'd',
           describe: 'Delay between tests (seconds)',
@@ -48,7 +55,7 @@ const argv = yargs
       })
       .example('node tools/load-test.js -s http://localhost:3000')
       .example('node tools/load-test.js -n 10 -c 1 3 5 -s https://pl-dev.engr.illinois.edu -f ~/git/ansible-pl/prairielearn/config_pl-dev.json')
-      .example('node tools/load-test.js -n 10 -c 1 3 5 -s https://prairielearn.engr.illinois.edu -f ~/git/ansible-pl/prairielearn/config_prairielearn.json')
+      .example('node tools/load-test.js -n 10 -c 1 3 5 -p 4 -s https://prairielearn.engr.illinois.edu -f ~/git/ansible-pl/prairielearn/config_prairielearn.json')
       .wrap(null)
       .help()
       .alias('help', 'h')
@@ -250,7 +257,7 @@ async function singleClientTest(iterations, iClient, clients) {
         timeTotal: [],
     };
     for (let i = 0; i < iterations; i++) {
-        console.log(`start (iteration ${i} of ${iterations}, client ${iClient} of ${clients})`);
+        console.log(`start (iteration ${i} of ${iterations}, client ${iClient} of ${clients}) on process ${process.pid}`);
         try {
             const r = await singleRequest();
             results.success.push(1);
@@ -283,10 +290,10 @@ async function main() {
         let results = [];
         for (let c of argv.clients) {
             console.log('######################################################################');
-            console.log(`Starting test with ${c} clients and ${argv.iterations} iterations`);
+            console.log(`Starting test with ${c} clients and ${argv.iterations} iterations using ${argv.processes} processes`);
             console.log(`Sleeping for ${argv.delay} seconds...`);
             await sleep(argv.delay);
-            const result = await singleTest(c, argv.iterations);
+            const result = await parallelSingleTest(c, argv.iterations);
             console.log(`${c} clients, ${argv.iterations} iterations, ${result.success.mean * 100}% success`);
             console.log(`homepage: ${result.timeHomepage.mean} +/- ${result.timeHomepage.stddev} s`);
             console.log(`questions: ${result.timeQuestions.mean} +/- ${result.timeQuestions.stddev} s`);
@@ -307,4 +314,54 @@ async function main() {
     }
 }
 
-main();
+// - Multiprocessing ----------------------------------------------------------
+const numWorker = argv.processes;
+const workers = new Array(numWorker).fill(null);
+const clientTestCallbacks = [];
+
+async function parallelSingleTest(clients, iterations) {
+    assert(clientTestCallbacks.length == 0);
+    let clientTests = [];
+    for (let iClient = 0; iClient < clients; iClient++) {
+        // delegate singleClientTest to workers using round-robin
+        let workerId = iClient % numWorker;
+        workers[workerId].send({iterations, iClient, clients});
+        clientTests.push(new Promise(resolve => {
+            clientTestCallbacks[iClient] = resolve;
+        }));
+    }
+    const clientResults = await Promise.all(clientTests);
+    clientTestCallbacks.length = 0;
+    return objectStats(aggregate(clientResults));
+}
+
+function clusterMessageHandler(worker, msg) {
+    clientTestCallbacks[msg.iClient](msg.results);
+}
+
+function workerMessageHandler(msg) {
+    singleClientTest(msg.iterations, msg.iClient, msg.clients).then(results => {
+        // iClient is used to identify the result
+        process.send({iClient: msg.iClient, results});
+    });
+}
+
+if (cluster.isMaster) {
+    // console.log(`Master ${process.pid} started`);
+    // cluster.on('exit', (worker, code, signal) => {
+    //     console.log(`Worker ${worker.process.pid} died`);
+    // });
+    cluster.on('message', clusterMessageHandler);
+    for (let i = 0; i < numWorker; i++) {
+        workers[i] = cluster.fork();
+    }
+    main().then(() => {
+        for (const id in cluster.workers) {
+            cluster.workers[id].kill();
+        }
+    });
+} else {
+    process.on('message', workerMessageHandler);
+    // console.log(`Worker ${process.pid} started`);
+}
+// ----------------------------------------------------------------------------
