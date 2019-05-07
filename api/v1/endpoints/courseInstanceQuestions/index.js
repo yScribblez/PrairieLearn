@@ -30,11 +30,18 @@ const walkDirAsync = async (directory) => {
 const readAllFiles = async (fileList) => {
     const promises = fileList.map((file) => fs.readFile(file));
     const fileContents = await Promise.all(promises);
-    return fileList.map((file, index) => ({
-        file,
+    return fileList.map((path, index) => ({
+        path,
         contents: fileContents[index].toString('base64'),
     }));
-}
+};
+
+const stripBasePath = (fileEntries, basePath) => {
+    return fileEntries.map((entry) => ({
+        ...entry,
+        path: entry.path.replace(basePath, ''),
+    }));
+};
 
 router.get('/', (req, res, next) => {
     const params = {
@@ -59,8 +66,13 @@ router.get('/:question_id/files', (req, res, next) => {
         try {
             const files = await walkDirAsync(questionPath);
             const filesContents = await readAllFiles(files);
-            res.send(filesContents);
+            console.log(filesContents);
+            const relativePathFiles = stripBasePath(filesContents, questionPath);
+            console.log(questionPath);
+            console.log(relativePathFiles);
+            res.send(relativePathFiles);
         } catch (e) {
+            console.error(e);
             next(e);
         }
     });
