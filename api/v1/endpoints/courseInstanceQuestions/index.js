@@ -36,6 +36,13 @@ const readAllFiles = async (fileList) => {
     }));
 };
 
+const writeAllFiles = async (directory, fileList) => {
+    const promises = fileList.map((file) => {
+        fs.writeFile(path.join(directory, file.path), Buffer.from(file.contents, 'base64'));
+    });
+    await Promise.all(promises);
+}
+
 const stripBasePath = (fileEntries, basePath) => {
     return fileEntries.map((entry) => ({
         ...entry,
@@ -66,13 +73,33 @@ router.get('/:question_id/files', (req, res, next) => {
         try {
             const files = await walkDirAsync(questionPath);
             const filesContents = await readAllFiles(files);
-            console.log(filesContents);
             const relativePathFiles = stripBasePath(filesContents, questionPath);
-            console.log(questionPath);
-            console.log(relativePathFiles);
             res.send(relativePathFiles);
         } catch (e) {
-            console.error(e);
+            next(e);
+        }
+    });
+});
+
+router.post('/:question_id/files', (req, res, next) => {
+    const { path: coursePath } = res.locals.course;
+    const params = {
+        course_instance_id: req.params.course_instance_id,
+        question_id: req.params.question_id,
+    };
+    sqldb.queryOneRow(sql.select_question_directory, params, async (err, result) => {
+        if (ERR(err, next)) return;
+        const { directory: questionDirectory } = result.rows[0];
+        const questionPath = path.join(coursePath, 'questions', questionDirectory);
+        if (!Array.isArray(req.body)) {
+            res.status(422).send();
+            return;
+        }
+        try {
+            // THIS IS SUPER FUCKING INSECURE DON'T EVER DEPLOY THIS
+            await writeAllFiles(questionPath, req.body);
+            res.status(204).send();
+        } catch (e) {
             next(e);
         }
     });

@@ -11,7 +11,8 @@ module.exports = function(req, res, next) {
     }
     res.locals.__csrf_token = csrf.generateToken(tokenData, config.secretKey);
 
-    if (req.method == 'POST') {
+    // Temporarily disabling CSRF checks for the API
+    if (req.method == 'POST' && !(/^\/pl\/api\//.test(req.path))) {
         var __csrf_token = req.headers['x-csrf-token'] ? req.headers['x-csrf-token'] : req.body.__csrf_token;
         if (!csrf.checkToken(__csrf_token, tokenData, config.secretKey)) {
             return next(error.make(403, 'CSRF fail', res.locals));
