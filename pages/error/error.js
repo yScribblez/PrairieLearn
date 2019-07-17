@@ -2,7 +2,7 @@ var _ = require('lodash');
 var path = require('path');
 var jsonStringifySafe = require('json-stringify-safe');
 
-var logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 
 module.exports = function(err, req, res, _next) {
     var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');

@@ -9,7 +9,7 @@ const AWS = require('aws-sdk');
 const SHA256 = require('crypto-js/sha256');
 const _ = require('lodash');
 
-const logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 const ExternalGraderECS = require('../../lib/externalGraderECS');
 
 const COUNT = 100;

@@ -4,7 +4,7 @@ const async = require('async');
 const router = express.Router();
 const AWS = require('aws-sdk');
 
-const logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 const assessment = require('../../lib/assessment');
 const externalGraderCommon = require('../../lib/externalGraderCommon');
 const sqldb = require('@prairielearn/prairielib/sql-db');

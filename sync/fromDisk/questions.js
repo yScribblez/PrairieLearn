@@ -2,7 +2,7 @@ const _ = require('lodash');
 const { callbackify } = require('util');
 const sqldb = require('@prairielearn/prairielib/sql-db');
 
-const logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 const perf = require('../performance')('question');
 
 module.exports.sync = function(courseInfo, questionDB, jobLogger, callback) {

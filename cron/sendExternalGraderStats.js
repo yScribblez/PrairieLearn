@@ -1,7 +1,7 @@
 const ERR = require('async-stacktrace');
 
 const config = require('../lib/config');
-const logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 const opsbot = require('../lib/opsbot');
 const sqldb = require('@prairielearn/prairielib/sql-db');
 

@@ -1,4 +1,4 @@
-const logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 
 module.exports = function(req, res, next) {
     if (req.method !== 'OPTIONS') {

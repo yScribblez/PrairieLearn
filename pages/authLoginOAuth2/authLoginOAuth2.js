@@ -2,7 +2,7 @@ const ERR = require('async-stacktrace');
 const express = require('express');
 const router = express.Router();
 
-const logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 const config = require('../../lib/config');
 
 const {google} = require('googleapis');

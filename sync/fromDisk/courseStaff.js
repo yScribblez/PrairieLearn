@@ -1,6 +1,6 @@
 const { callbackify } = require('util');
 const sqldb = require('@prairielearn/prairielib/sql-db');
-const logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 const config = require('../../lib/config');
 
 module.exports.sync = function(courseInstance, callback) {

@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 const namedLocks = require('../lib/named-locks');
 const error = require('@prairielearn/prairielib/error');
-const logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 const sqldb = require('@prairielearn/prairielib/sql-db');
 const sqlLoader = require('@prairielearn/prairielib/sql-loader');
 

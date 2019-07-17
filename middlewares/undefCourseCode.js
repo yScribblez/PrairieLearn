@@ -1,7 +1,7 @@
 var ERR = require('async-stacktrace');
 var async = require('async');
 
-var logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 var requireFrontend = require('../lib/require-frontend');
 var sqldb = require('@prairielearn/prairielib/sql-db');
 var sqlLoader = require('@prairielearn/prairielib/sql-loader');

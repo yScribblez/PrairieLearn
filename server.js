@@ -15,7 +15,7 @@ const uuidv4 = require('uuid/v4');
 const argv = require('yargs-parser') (process.argv.slice(2));
 const multer  = require('multer');
 
-const logger = require('./lib/logger');
+const { logger } = require('./lib/logger');
 const config = require('./lib/config');
 const load = require('./lib/load');
 const aws = require('./lib/aws.js');
@@ -81,8 +81,6 @@ if (config.blockedWarnEnable) {
 const app = express();
 app.set('views', path.join(__dirname, 'pages'));
 app.set('view engine', 'ejs');
-
-config.devMode = (app.get('env') == 'development');
 
 app.use(function(req, res, next) {res.locals.homeUrl = config.homeUrl; next();});
 app.use(function(req, res, next) {res.locals.urlPrefix = res.locals.plainUrlPrefix = config.urlPrefix; next();});

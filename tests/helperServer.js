@@ -17,7 +17,7 @@ config.startServer = false;
 config.serverPort = 3007;
 var server = require('../server');
 
-var logger = require('./dummyLogger');
+const { logger } = require('./dummyLogger');
 var helperDb = require('./helperDb');
 
 var courseDirDefault = path.join(__dirname, '..', 'exampleCourse');

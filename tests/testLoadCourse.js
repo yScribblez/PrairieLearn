@@ -3,7 +3,7 @@ var assert = require('assert');
 var fs = require('fs');
 
 var courseDB = require('../lib/course-db');
-var logger = require('./dummyLogger');
+const { logger } = require('./dummyLogger');
 
 describe('courseDB.loadFullCourse() on exampleCourse', function() {
     this.timeout(20000);

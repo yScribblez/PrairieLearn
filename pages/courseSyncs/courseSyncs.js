@@ -5,7 +5,7 @@ const router = express.Router();
 const error = require('@prairielearn/prairielib/error');
 const { sqlDb, sqlLoader } = require('@prairielearn/prairielib');
 
-const logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 const config = require('../../lib/config');
 const serverJobs = require('../../lib/server-jobs');
 const syncFromDisk = require('../../sync/syncFromDisk');

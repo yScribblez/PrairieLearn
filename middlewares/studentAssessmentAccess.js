@@ -4,7 +4,7 @@
 const express = require('express');
 var router = express.Router();
 
-var logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 var csrf = require('../lib/csrf');
 var config = require('../lib/config');
 

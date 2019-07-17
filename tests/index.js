@@ -1,4 +1,4 @@
-var logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 
 const consoleTransport = logger.transports.find(transport => (transport.name === 'console'));
 consoleTransport.level = 'warn';

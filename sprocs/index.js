@@ -5,7 +5,7 @@ const async = require('async');
 
 const namedLocks = require('../lib/named-locks');
 const error = require('@prairielearn/prairielib/error');
-const logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 const sqldb = require('@prairielearn/prairielib/sql-db');
 
 module.exports = {

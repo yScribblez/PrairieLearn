@@ -8,7 +8,7 @@ var sqlLoader = require('@prairielearn/prairielib/sql-loader');
 
 var sql = sqlLoader.loadSqlEquiv(__filename);
 
-var logger = require('./dummyLogger');
+const { logger } = require('./dummyLogger');
 var courseDir = 'exampleCourse';
 var course_id = 1;
 

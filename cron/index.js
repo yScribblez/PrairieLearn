@@ -3,7 +3,7 @@ const async = require('async');
 const _ = require('lodash');
 const debug = require('debug')('prairielearn:cron');
 
-const logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 const config = require('../lib/config');
 
 const namedLocks = require('../lib/named-locks');

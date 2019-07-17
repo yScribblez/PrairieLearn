@@ -7,16 +7,17 @@ const mustache = require('mustache');
 const cheerio = require('cheerio');
 const hash = require('crypto').createHash;
 const parse5 = require('parse5');
-const debug = require('debug')('prairielearn:' + path.basename(__filename, '.js'));
+const debug = require('debug')(`prairielearn:${path.basename(__filename, '.js')}`);
 
 const schemas = require('../schemas');
-const logger = require('../lib/logger');
+const { logger } = require('../lib/logger');
 const codeCaller = require('../lib/code-caller');
 const workers = require('../lib/workers');
 const jsonLoader = require('../lib/json-load');
 const cache = require('../lib/cache');
 const courseUtil = require('../lib/courseUtil');
 const markdown = require('../lib/markdown');
+const { CourseIssueError } = require('../lib/question');
 
 // Maps core element names to element info
 let coreElementsCache = {};
@@ -312,32 +313,32 @@ module.exports = {
         const checked = [];
         const checkProp = (prop, type, presentPhases, editPhases) => {
             if (!presentPhases.includes(phase)) return null;
-            if (!_.has(data, prop)) return '"' + prop + '" is missing from "data"';
+            if (!_.has(data, prop)) return `"${prop}" is missing from "data"`;
             if (type == 'integer') {
                 if (!_.isInteger(data[prop])) {
-                    return 'data.' + prop + ' is not an integer: ' + String(data[prop]);
+                    return `data.${prop} is not an integer: ${JSON.stringify(data[prop])}`;
                 }
             } else if (type == 'number') {
                 if (!_.isFinite(data[prop])) {
-                    return 'data.' + prop + ' is not a number: ' + String(data[prop]);
+                    return `data.${prop} is not a number: ${JSON.stringify(data[prop])}`;
                 }
             } else if (type == 'string') {
                 if (!_.isString(data[prop])) {
-                    return 'data.' + prop + ' is not a string: ' + String(data[prop]);
+                    return `data.${prop} is not a string: ${JSON.stringify(data[prop])}`;
                 }
             } else if (type == 'boolean') {
                 if (!_.isBoolean(data[prop])) {
-                    return 'data.' + prop + ' is not a boolean: ' + String(data[prop]);
+                    return `data.${prop} is not a boolean: ${JSON.stringify(data[prop])}`;
                 }
             } else if (type == 'object') {
                 if (!_.isObject(data[prop])) {
-                    return 'data.' + prop + ' is not an object: ' + String(data[prop]);
+                    return `data.${prop} is not an object: ${JSON.stringify(data[prop])}`;
                 }
             } else {
-                return 'invalid type: ' + String(type);
+                return `invalid type: ${String(type)}`;
             }
             if (!editPhases.includes(phase)) {
-                if (!_.has(origData, prop)) return '"' + prop + '" is missing from "origData"';
+                if (!_.has(origData, prop)) return `"${prop}" is missing from "origData"`;
                 if (!_.isEqual(data[prop], origData[prop])) {
                     return `data.${prop} has been illegally modified, new value: "${JSON.stringify(data[prop])}", original value: "${JSON.stringify(origData[prop])}"`;
                 }
@@ -369,7 +370,7 @@ module.exports = {
         err = checkProp('gradable',              'boolean', ['parse', 'grade', 'test'],           []);                         if (err) return err;
         err = checkProp('filename',              'string',  ['file'],                             []);                         if (err) return err;
         const extraProps = _.difference(_.keys(data), checked);
-        if (extraProps.length > 0) return '"data" has invalid extra keys: ' + extraProps.join(', ');
+        if (extraProps.length > 0) return `"data" has invalid extra keys: ${extraProps.join(', ')}`;
 
         return null;
     },
@@ -397,21 +398,21 @@ module.exports = {
                 try {
                     [ret_val, consoleLog] = await module.exports.elementFunction(pc, phase, elementName, serializedNode, data, context);
                 } catch (e) {
-                    const courseIssue = new Error(`${elementFile}: Error calling ${phase}(): ${e.toString()}`);
+                    const courseIssue = new CourseIssueError(`${elementFile}: Error calling ${phase}(): ${e.toString()}`);
                     courseIssue.data = e.data;
                     courseIssue.fatal = true;
                     // We'll catch this and add it to the course issues list
                     throw courseIssue;
                 }
                 if (_.isString(consoleLog) && consoleLog.length > 0) {
-                    const courseIssue = new Error(`${elementFile}: output logged on console during ${phase}()`);
+                    const courseIssue = new CourseIssueError(`${elementFile}: output logged on console during ${phase}()`);
                     courseIssue.data = { outputBoth: consoleLog };
                     courseIssue.fatal = false;
                     courseIssues.push(courseIssue);
                 }
                 if (phase == 'render') {
                     if (!_.isString(ret_val)) {
-                        const courseIssue = new Error(`${elementFile}: Error calling ${phase}(): return value is not a string`);
+                        const courseIssue = new CourseIssueError(`${elementFile}: Error calling ${phase}(): return value is not a string`);
                         courseIssue.data = { ret_val };
                         courseIssue.fatal = true;
                         throw courseIssue;
@@ -425,7 +426,7 @@ module.exports = {
                     if (buf.length > 0) {
                         if (fileData.length > 0) {
                             // If fileData already has non-zero length, throw an error
-                            const courseIssue = new Error(`${elementFile}: Error calling ${phase}(): attempting to overwrite non-empty fileData`);
+                            const courseIssue = new CourseIssueError(`${elementFile}: Error calling ${phase}(): attempting to overwrite non-empty fileData`);
                             courseIssue.fatal = true;
                             throw courseIssue;
                         } else {
@@ -438,7 +439,7 @@ module.exports = {
                     data = ret_val; // eslint-disable-line require-atomic-updates
                     const checkErr = module.exports.checkData(data, origData, phase);
                     if (checkErr) {
-                        const courseIssue = new Error(`${elementFile}: Invalid state after ${phase}(): ${checkErr}`);
+                        const courseIssue = new CourseIssueError(`${elementFile}: Invalid state after ${phase}(): ${checkErr}`);
                         courseIssue.fatal = true;
                         throw courseIssue;
                     }
@@ -486,14 +487,14 @@ module.exports = {
 
                 module.exports.legacyElementFunction(pc, phase, elementName, $, element, data, context, (err, ret_val, consoleLog) => {
                     if (err) {
-                        const courseIssue = new Error(elementFile + ': Error calling ' + phase + '(): ' + err.toString());
+                        const courseIssue = new CourseIssueError(`${elementFile}: Error calling ${phase}(): ${err.toString()}`);
                         courseIssue.data = err.data;
                         courseIssue.fatal = true;
                         courseIssues.push(courseIssue);
                         return callback(courseIssue);
                     }
                     if (_.isString(consoleLog) && consoleLog.length > 0) {
-                        const courseIssue = new Error(elementFile + ': output logged on console during ' + phase + '()');
+                        const courseIssue = new CourseIssueError(`${elementFile}: output logged on console during ${phase}()`);
                         courseIssue.data = { outputBoth: consoleLog };
                         courseIssue.fatal = false;
                         courseIssues.push(courseIssue);
@@ -501,7 +502,7 @@ module.exports = {
 
                     if (phase == 'render') {
                         if (!_.isString(ret_val)) {
-                            const courseIssue = new Error(elementFile + ': Error calling ' + phase + '(): return value is not a string');
+                            const courseIssue = new CourseIssueError(`${elementFile}: Error calling ${phase}(): return value is not a string`);
                             courseIssue.data = { ret_val };
                             courseIssue.fatal = true;
                             courseIssues.push(courseIssue);
@@ -517,7 +518,7 @@ module.exports = {
                         if (buf.length > 0) {
                             if (fileData.length > 0) {
                                 // If fileData already has non-zero length, throw an error
-                                const courseIssue = new Error(elementFile + ': Error calling ' + phase + '(): attempting to overwrite non-empty fileData');
+                                const courseIssue = new CourseIssueError(`${elementFile}: Error calling ${phase}(): attempting to overwrite non-empty fileData`);
                                 courseIssue.fatal = true;
                                 courseIssues.push(courseIssue);
                                 return callback(courseIssue);
@@ -530,7 +531,7 @@ module.exports = {
                         data = ret_val;
                         const checkErr = module.exports.checkData(data, origData, phase);
                         if (checkErr) {
-                            const courseIssue = new Error(elementFile + ': Invalid state after ' + phase + '(): ' + checkErr);
+                            const courseIssue = new CourseIssueError(`${elementFile}: Invalid state after ${phase}(): ${checkErr}`);
                             courseIssue.fatal = true;
                             courseIssues.push(courseIssue);
                             return callback(courseIssue);
@@ -556,7 +557,7 @@ module.exports = {
 
         const checkErr = module.exports.checkData(data, origData, phase);
         if (checkErr) {
-            const courseIssue = new Error('Invalid state before ' + phase + ': ' + checkErr);
+            const courseIssue = new CourseIssueError(`Invalid state before ${phase}: ${checkErr}`);
             courseIssue.fatal = true;
             courseIssues.push(courseIssue);
             return callback(null, courseIssues, data, '', Buffer.from(''));
@@ -565,7 +566,7 @@ module.exports = {
         const htmlFilename = path.join(context.question_dir, 'question.html');
         module.exports.execTemplate(htmlFilename, data, (err, html, $) => {
             if (err) {
-                const courseIssue = new Error(htmlFilename + ': ' + err.toString());
+                const courseIssue = new CourseIssueError(`${htmlFilename}: ${err.toString()}`);
                 courseIssue.fatal = true;
                 courseIssues.push(courseIssue);
                 return callback(null, courseIssues, data, '', Buffer.from(''));
@@ -616,7 +617,7 @@ module.exports = {
 
         const checkErr = module.exports.checkData(data, origData, phase);
         if (checkErr) {
-            const courseIssue = new Error('Invalid state before calling server.' + phase + '(): ' + checkErr);
+            const courseIssue = new CourseIssueError(`Invalid state before calling server ${phase}(): ${checkErr}`);
             courseIssue.fatal = true;
             courseIssues.push(courseIssue);
             return callback(null, courseIssues, data, '');
@@ -625,7 +626,7 @@ module.exports = {
         module.exports.execPythonServer(pc, phase, data, html, context, (err, ret_val, consoleLog) => {
             if (err) {
                 const serverFile = path.join(context.question_dir, 'server.py');
-                const courseIssue = new Error(serverFile + ': Error calling ' + phase + '(): ' + err.toString());
+                const courseIssue = new CourseIssueError(`${serverFile}: Error calling ${phase}(): ${err.toString()}`);
                 courseIssue.data = err.data;
                 courseIssue.fatal = true;
                 courseIssues.push(courseIssue);
@@ -633,7 +634,7 @@ module.exports = {
             }
             if (_.isString(consoleLog) && consoleLog.length > 0) {
                 const serverFile = path.join(context.question_dir, 'server.py');
-                const courseIssue = new Error(serverFile + ': output logged on console');
+                const courseIssue = new CourseIssueError(`${serverFile}: output logged on console`);
                 courseIssue.data = { outputBoth: consoleLog };
                 courseIssue.fatal = false;
                 courseIssues.push(courseIssue);
@@ -651,7 +652,7 @@ module.exports = {
                     if (fileData.length > 0) {
                         // If fileData already has non-zero length, throw an error
                         const serverFile = path.join(context.question_dir, 'server.py');
-                        const courseIssue = new Error(serverFile + ': Error calling ' + phase + '(): attempting to overwrite non-empty fileData');
+                        const courseIssue = new CourseIssueError(`${serverFile}: Error calling ${phase}(): attempting to overwrite non-empty fileData`);
                         courseIssue.fatal = true;
                         courseIssues.push(courseIssue);
                         return callback(null, courseIssues, data);
@@ -666,7 +667,7 @@ module.exports = {
             const checkErr = module.exports.checkData(data, origData, phase);
             if (checkErr) {
                 const serverFile = path.join(context.question_dir, 'server.py');
-                const courseIssue = new Error(serverFile + ': Invalid state after ' + phase + '(): ' + checkErr);
+                const courseIssue = new CourseIssueError(`${serverFile}: Invalid state after ${phase}(): ${checkErr}`);
                 courseIssue.fatal = true;
                 courseIssues.push(courseIssue);
                 return callback(null, courseIssues, data);
@@ -1013,7 +1014,7 @@ module.exports = {
                                             }
                                         }
                                     } else {
-                                        const courseIssue = new Error(`Error getting dependencies for ${resolvedElement.name}: "${type}" is not an array`);
+                                        const courseIssue = new CourseIssueError(`Error getting dependencies for ${resolvedElement.name}: "${type}" is not an array`);
                                         courseIssue.data = { elementDependencies };
                                         courseIssue.fatal = true;
                                         courseIssues.push(courseIssue);

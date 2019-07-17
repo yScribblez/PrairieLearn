@@ -3,7 +3,7 @@ const assert = require('assert');
 const express = require('express');
 const router = express.Router();
 
-const logger = require('../../lib/logger');
+const { logger } = require('../../lib/logger');
 const config = require('../../lib/config');
 const csrf = require('../../lib/csrf');
 const sqldb = require('@prairielearn/prairielib/sql-db');
