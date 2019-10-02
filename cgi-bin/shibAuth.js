@@ -108,8 +108,7 @@ sqldb.init(pgConfig, idleErrorHandler, function(err) {
     server.on('listening', () => {
       var client = net.Socket();
 
-      // Print to the console to make the CGI work
-      client.on('data', (data) => { console.log(data.toString()); });
+      client.on('data', translate_response);
       client.on('end', shutdown);
       client.connect(socketPath, () => {
           // We don't need the full CGI pass-through, just the fields we care about
@@ -129,4 +128,13 @@ function shutdown() {
     sqldb.close((err) => {
         process.exit();
     });
+}
+
+function translate_response(data) {
+    // Express responds with HTTP/1.1 200 OK
+    // CGI expects           Status: 200 OK
+
+    var newData = data.toString().replace(/^HTTP\/1\.[01]/, "Status:");
+    // Print to the console to make the CGI work
+    console.log(newData);
 }
