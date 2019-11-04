@@ -50,8 +50,8 @@ python3.6 --version   # should return "Python 3.6" or higher
 * Install the Python libraries:
 
 ```sh
-cd PrairieLearn
-python3 -m pip install -r requirements.txt
+cd PrairieLearn/environments/centos7-plbase
+python3 -m pip install -r python-requirements.txt
 ```
 
 * Create the database (one time only):
@@ -109,4 +109,4 @@ node server
 
    This should end with `PrairieLearn server ready` and will remain running in the foreground, so this terminal can't be used for anything else. Stopping or restarting the server can be done with `Crtl-C`.
 
-* In a web-browswer go to [http://localhost:3000](http://localhost:3000)
+* In a web-browser go to [http://localhost:3000](http://localhost:3000)

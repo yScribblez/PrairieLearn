@@ -142,8 +142,10 @@
   * Fix error reporting for v2 questions (Matt West).
 
   * Fix detection of different internals during R package installation (James Balamuta).
-  
+
   * Fix figures in `pl-drawing` documentation (Nicolas Nytko).
+
+  * Fix native installation documentation (Dave Mussulman).
 
 * __3.2.0__ - 2019-08-05
 
