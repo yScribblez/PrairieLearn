@@ -44,6 +44,7 @@
                 {"id": "demoMatrixComplexAlgebra",            "points": 2, "maxPoints": 10},
                 {"id": "demoCustomElement",                   "points": 1, "maxPoints": 1},
                 {"id": "demoCustomGradeFunction",             "points": 1, "maxPoints": 1},
+                {"id": "demoSurveyQuestion",                  "points": 1, "maxPoints": 1},
                 {"id": "demoRandomSymbolic",                  "points": 2, "maxPoints": 10},
                 {"id": "demoRandomPlot",                      "points": 1, "maxPoints": 3},
                 {"id": "demoRandomDataFrame",                 "points": 2, "maxPoints": 6},
