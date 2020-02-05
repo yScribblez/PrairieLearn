@@ -61,6 +61,24 @@
 
   * Add question `demoSurveyQuestion` as a way of collecting feedback (James Balamuta, h/t Geoffrey Herman).
 
+  * Add diagnostics for external grader results processing (Dave Mussulman).
+
+  * Add the `ucidata` package to `centos-plbase` (James Balamuta, h/t David Dalpiaz).
+
+  * Add navbar dropdowns to swap between courses, course instances, and assessments (Tim Bretl).
+
+  * Add ability to create and modify all course content in the browser without docker or git (Tim Bretl).
+
+  * Add support for Rust to `pl-code` element (Nathan Walters).
+
+  * Add tests for LTI auth (Dave Mussulman).
+
+  * Add choose course instance dropdown to instructor nav-bar when viewing course only (Tim Bretl).
+
+  * Add file size limit to student-visible part of `pl-file-upload` (Nathan Bowman).
+
+  * Add explanation of `None` role in documentation and instructor gradebook view (James Balamuta).
+
   * Change v3 questions to disable autocomplete on the question form (Nathan Walters).
 
   * Change `centos7-python` to `grader-python` and place it under `graders/`  (James Balamuta).
@@ -83,13 +101,27 @@
 
   * Change `rpy2` version from 2.9.5 to 3.2.0 (James Balamuta).
 
+  * Change institution definitions to read from the `institutions` table (Dave Mussulman).
+
   * Change documentation examples to be self-contained (James Balamuta).
 
   * Change external grader documentation to show file system structure (James Balamuta).
 
   * Change test infrastructure to use `testCourse` instead of `exampleCourse` (James Balamuta).
 
+  * Change size limit for form data by increasing from 200K to 1M (Nathan Bowman).
+
   * Change `grader-r` docker container to include `pltest` package (James Balamuta).
+
+  * Change navbar/navtab structure to match course content structure (Tim Bretl).
+
+  * Change `MathJax` version from 2.7.5 to 3.0.0 (Nicolas Nytko)
+
+  * Change and standardize naming scheme on in-browser add/copy of course instance, assessment, or question (Tim Bretl).
+
+  * Change order in which course instances are listed to be by earliest and latest access date (Tim Bretl).
+
+  * Change size limit for form data to account for increase from encoding (Nathan Bowman).
 
   * Fix dead letter cron job for `async` v3 (Matt West).
 
@@ -148,8 +180,48 @@
   * Fix error reporting for v2 questions (Matt West).
 
   * Fix detection of different internals during R package installation (James Balamuta).
-  
+
   * Fix figures in `pl-drawing` documentation (Nicolas Nytko).
+
+  * Fix use of `data["correct_answers"]` in documentation (James Balamuta, h/t Eric Huber).
+
+  * Fix authorization for users behind web proxies (Dave Mussulman).
+
+  * Fix admin overview page institutions (Matt West & Dave Mussulman).
+
+  * Fix button appearance after bootstrap upgrade (Tim Bretl).
+
+  * Fix bug in course instance switcher on file edit page (Tim Bretl).
+
+  * Fix bug in branch links on file browser page (Tim Bretl).
+
+  * Fix bug in element popovers (Tim Bretl).
+
+  * Fix redirects to question preview page by maintaining query parameters (Nathan Walters).
+
+  * Fix redirects to course admin sub-page when switching course instances (Tim Bretl).
+
+  * Fix server-side check of new file names and paths on in-browser rename (Tim Bretl).
+
+  * Fix in-browser course edit handler to update commit hash only when using git (Tim Bretl).
+
+  * Fix in-browser course edit handler to keep one course lock throughout entire process (Tim Bretl).
+
+  * Fix button alignment in popovers (Tim Bretl).
+
+  * Fix authorization of effective user (Tim Bretl).
+
+  * Fix in-browser add/copy of course instances to ensure user has `Instructor` role (Tim Bretl).
+
+  * Fix permissions on issues page (Tim Bretl).
+  
+  * Fix angle tolerance checks for vectors in `pl-drawing` element (Nicolas Nytko).
+  
+  * Fix unique element checking in default grader for `pl-drawing` element (Nicolas Nytko).
+
+  * Fix math rendering in `pl-drawing` element on Safari (Nicolas Nytko).
+
+  * Remove `number` column from `course_instances` table and `number` property from `infoCourseInstance.json` schema (Tim Bretl).
 
 * __3.2.0__ - 2019-08-05
 
