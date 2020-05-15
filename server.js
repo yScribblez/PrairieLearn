@@ -17,6 +17,7 @@ const argv = require('yargs-parser') (process.argv.slice(2));
 const multer = require('multer');
 const filesize = require('filesize');
 const url = require('url');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const logger = require('./lib/logger');
 const config = require('./lib/config');
@@ -237,6 +238,15 @@ app.use('/pl/logout', require('./pages/authLogout/authLogout'));
 app.use('/pl/password', require('./pages/authPassword/authPassword'));
 app.use('/pl/news_items', require('./pages/news_items/news_items.js'));
 app.use('/pl/news_item', require('./pages/news_item/news_item.js'));
+
+// workspace
+app.use('/pl/workspace', createProxyMiddleware({
+    target: 'http://3.20.226.222',
+    changeOrigin: true,
+    pathRewrite: {
+        '^/pl/workspace': '/',
+    },
+}));
 
 // dev-mode pages are mounted for both out-of-course access (here) and within-course access (see below)
 if (config.devMode) {
