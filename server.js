@@ -244,7 +244,7 @@ app.use('/pl/workspace', createProxyMiddleware({
     target: 'http://3.20.226.222',
     changeOrigin: true,
     pathRewrite: {
-        '^/pl/workspace': '/',
+        '^/pl/workspace/': '/',
     },
 }));
 
