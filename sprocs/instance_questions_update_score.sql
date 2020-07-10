@@ -83,6 +83,15 @@ BEGIN
     new_score := new_score_perc / 100;
     new_correct := (new_score > 0.5);
 
+    partial_scores = CASE
+    WHEN partial_scores IS NULL THEN arg_partial_scores
+    WHEN arg_partial_scores IS NULL THEN partial_scores
+    WHEN jsonb_typeof(partial_scores) = 'object' AND jsonb_typeof(arg_partial_scores) = 'object' THEN partial_scores || arg_partial_scores
+    ELSE arg_partial_scores
+    END,
+
+    -- #### Did we perhaps want feedback moved here so it can be added to the grading_jobs table below?
+
     -- ##################################################################
     -- if we were originally provided a submission_id or we have feedback,
     -- create a grading job and update the submission
