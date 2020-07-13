@@ -30,6 +30,7 @@ DECLARE
     new_points double precision;
     new_score double precision;
     new_correct boolean;
+    partial_scores jsonb;
 BEGIN
     -- ##################################################################
     -- get the assessment_instance, max_points, and (possibly) submission_id
@@ -84,13 +85,11 @@ BEGIN
     new_correct := (new_score > 0.5);
 
     partial_scores = CASE
-    WHEN partial_scores IS NULL THEN arg_partial_scores
-    WHEN arg_partial_scores IS NULL THEN partial_scores
-    WHEN jsonb_typeof(partial_scores) = 'object' AND jsonb_typeof(arg_partial_scores) = 'object' THEN partial_scores || arg_partial_scores
-    ELSE arg_partial_scores
-    END,
-
-    -- #### Did we perhaps want feedback moved here so it can be added to the grading_jobs table below?
+        WHEN partial_scores IS NULL THEN arg_partial_scores
+        WHEN arg_partial_scores IS NULL THEN partial_scores
+        WHEN jsonb_typeof(partial_scores) = 'object' AND jsonb_typeof(arg_partial_scores) = 'object' THEN partial_scores || arg_partial_scores
+        ELSE arg_partial_scores
+    END;
 
     -- ##################################################################
     -- if we were originally provided a submission_id or we have feedback,
@@ -111,12 +110,6 @@ BEGIN
                 WHEN arg_feedback IS NULL THEN feedback
                 WHEN jsonb_typeof(feedback) = 'object' AND jsonb_typeof(arg_feedback) = 'object' THEN feedback || arg_feedback
                 ELSE arg_feedback
-            END,
-            partial_scores = CASE
-                WHEN partial_scores IS NULL THEN arg_partial_scores
-                WHEN arg_partial_scores IS NULL THEN partial_scores
-                WHEN jsonb_typeof(partial_scores) = 'object' AND jsonb_typeof(arg_partial_scores) = 'object' THEN partial_scores || arg_partial_scores
-                ELSE arg_partial_scores
             END,
             graded_at = now(),
             grading_method = 'External',
