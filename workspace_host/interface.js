@@ -87,7 +87,7 @@ app.post('/', function(req, res) {
         res.status(500).send("Missing workspace_id");
     } else if (action == undefined) {
         res.status(500).send("Missing action");
-    } else if (["init", "sync", "reset", "destroy"].includes(action)) {
+    } else if (["init", "start", "sync", "reset", "destroy"].includes(action)) {
         eval(action + "Sequence")(workspace_id, res);
     } else if (action == "status") {
         res.status(200).send("Running");
@@ -378,7 +378,6 @@ function initSequence(workspace_id, res) {
         (callback) => {_syncPullContainer(workspace_id, callback)},
         (workspace_id, callback) => {_getAvailablePort(workspace_id, 1024, callback)},
         _createContainer,
-        _syncPullContainer,
         _startContainer,
     ], function(err) {
         if (err) {
@@ -387,6 +386,32 @@ function initSequence(workspace_id, res) {
         } else {
             logger.info(`Container initialized for workspace_id=${workspace_id}`);
             res.status(200).send(`Container for workspace ${workspace_id} initialized.`);
+        };
+    });
+};
+
+// Called by the main server to make sure that the workspace container is updated and running
+function startSequence(workspace_id, res) {
+    async.waterfall([
+        (callback) => {_syncPullContainer(workspace_id, callback)},
+        _getContainer,
+        (container, cb) => {
+            _startContainer(container, (err_0, _) => {
+                if (err_0 && err_0.toString().includes("no such container")) {
+                    initSequence(workspace_id, res);
+                    return;
+                } else {
+                    cb(null, workspace_id);
+                };
+            });
+        },
+    ], function(err) {
+        if (err) {
+            logger.error(`Error for workspace_id=${workspace_id}: ${err}`);
+            res.status(500).send(err);
+        } else {
+            logger.info(`Container started for workspace_id=${workspace_id}`);
+            res.status(200).send(`Container for workspace ${workspace_id} started.`);
         };
     });
 };
