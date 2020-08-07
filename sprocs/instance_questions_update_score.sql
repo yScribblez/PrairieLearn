@@ -31,6 +31,13 @@ DECLARE
     new_score double precision;
     new_correct boolean;
     partial_scores jsonb;
+    name_key text;
+    name_data jsonb;
+    calc_new_score double precision;
+    score double precision;
+    weight double precision;
+    total_weight double precision;
+    total_weight_score double precision;
 BEGIN
     -- ##################################################################
     -- get the assessment_instance, max_points, and (possibly) submission_id
@@ -90,6 +97,42 @@ BEGIN
         WHEN jsonb_typeof(partial_scores) = 'object' AND jsonb_typeof(arg_partial_scores) = 'object' THEN partial_scores || arg_partial_scores
         ELSE arg_partial_scores
     END;
+
+    -- # Calc new score, formula: (weight * score) + (weight * score) / sum of weights
+    calc_new_score := 0;
+    total_weight := 0;
+    total_weight_score := 0;
+
+    FOR name_key, name_data IN SELECT * FROM jsonb_each(partial_scores) LOOP
+        RAISE WARNING 'name_key=%: name_data=%', name_key, name_data;
+            score := json_extract_path(name_data::json, 'score');
+            weight := json_extract_path(name_data::json, 'weight');
+            total_weight = total_weight + weight;
+            total_weight_score = total_weight_score + (weight * score);
+            IF score IS NULL OR weight IS NULL THEN
+                RAISE EXCEPTION 'Invalid score and weight uploaded {score: number, weight: number}: score=%, weight=%', score, weight;
+            END IF;
+
+            IF total_weight = 0 THEN
+                total_weight := 1;
+            END IF;
+
+            RAISE WARNING 'score=%', score;
+            RAISE WARNING 'weight=%', weight;
+    END LOOP;
+
+    calc_new_score := total_weight_score / total_weight;
+    RAISE WARNING 'calc_new_score=%', calc_new_score;
+
+    IF jsonb_typeof(partial_scores) = 'object' AND jsonb_typeof(arg_partial_scores) = 'object' THEN
+        IF arg_points IS NOT NULL OR arg_score_perc IS NOT NULL THEN
+            RAISE WARNING 'made it!';
+            IF arg_points != new_score OR arg_score_perc != new_score_perc THEN
+                RAISE EXCEPTION 'partial_score invalid based on with arg_score_perc=% or arg_score=% upload', arg_score_perc, arg_points;
+            END IF;
+        END IF;
+    END IF;
+
 
     -- ##################################################################
     -- if we were originally provided a submission_id or we have feedback,
