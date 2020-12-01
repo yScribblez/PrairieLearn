@@ -1,0 +1,1 @@
+ALTER TABLE submissions ADD COLUMN IF NOT EXISTS effective_user_id BIGINT

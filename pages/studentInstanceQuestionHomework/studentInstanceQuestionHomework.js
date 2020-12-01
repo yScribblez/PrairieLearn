@@ -29,6 +29,7 @@ function processSubmission(req, res, callback) {
     const submission = {
         variant_id: variant_id,
         auth_user_id: res.locals.authn_user.user_id,
+        effective_user_id: res.locals.user,
         submitted_answer: submitted_answer,
         credit: res.locals.authz_result.credit,
         mode: res.locals.authz_data.mode,
