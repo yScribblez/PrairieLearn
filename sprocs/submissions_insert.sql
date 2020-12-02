@@ -12,6 +12,7 @@ CREATE OR REPLACE FUNCTION
         IN mode enum_mode,
         IN variant_id bigint,
         IN authn_user_id bigint,
+	IN effective_user_id bigint,
         OUT submission_id bigint
     )
 AS $$
@@ -84,9 +85,9 @@ BEGIN
 
     INSERT INTO submissions
             (variant_id, auth_user_id,  raw_submitted_answer, submitted_answer, format_errors,
-            credit, mode, duration,         params,         true_answer, gradable, broken)
+            credit, mode, duration,         params,         true_answer, gradable, broken, effective_user_id)
     VALUES  (variant_id, authn_user_id, raw_submitted_answer, submitted_answer, format_errors,
-            credit, mode, delta,    variant.params, variant.true_answer, gradable, broken)
+            credit, mode, delta,    variant.params, variant.true_answer, gradable, broken, effective_user_id)
     RETURNING id
     INTO submission_id;
 
