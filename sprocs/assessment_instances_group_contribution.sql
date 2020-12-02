@@ -83,6 +83,19 @@ BEGIN
                     AND gj.graded_at IS NOT NULL
             )
         ),
+        group_members AS (
+            SELECT
+                gu.user_id AS user_id,
+                ai.id AS ai_id
+            FROM
+                assessments AS a
+                JOIN course_instances AS ci ON (ci.id = a.course_instance_id)
+                JOIN assessment_sets AS aset ON (aset.id = a.assessment_set_id)
+                JOIN assessment_instances AS ai ON (ai.assessment_id = a.id)
+                LEFT JOIN group_users AS gu ON (gu.group_id = ai.group_id)
+            WHERE
+                a.id = a_id
+        ),
         rw_contribution AS (
             (
                 SELECT
@@ -96,15 +109,26 @@ BEGIN
                     el.ai_id
             )
         ),
+        rw_contribution_padded AS (
+            (
+                SELECT
+                    gm.user_id as user_id,
+                    gm.ai_id as ai_id,
+                    CASE WHEN rwc.contribution is NULL THEN 0 ELSE rwc.contribution END AS contribution
+                FROM
+                    group_members as gm
+                LEFT JOIN rw_contribution as rwc
+                    ON gm.user_id = rwc.user_id
+            )
+        ),
         rw_contribution_arr AS (
             (
                 SELECT
                     rc.ai_id as ai_id,
                     array_agg(rc.contribution) as contribution
                 FROM
-                    rw_contribution as rc
+                    rw_contribution_padded as rc
                 GROUP BY
-                    rc.user_id,
                     rc.ai_id
             )
         ),
