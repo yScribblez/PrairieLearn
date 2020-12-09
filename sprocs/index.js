@@ -72,6 +72,7 @@ module.exports = {
             'select_assessment_questions.sql',
             'questions_select.sql',
             'assessment_instance_label.sql',
+            'group_contribution.sql',
             'assessment_label.sql',
             'admin_assessment_question_number.sql',
             'course_permissions_insert_by_user_uid.sql',

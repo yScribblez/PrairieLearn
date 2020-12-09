@@ -176,7 +176,5 @@ BEGIN
         FROM
             assessment_instances_info AS ai 
             JOIN rw_contribution_arr AS ca ON (ai.assessment_instance_id = ca.ai_id);
-
 END;
 $$ LANGUAGE plpgsql STABLE;
-

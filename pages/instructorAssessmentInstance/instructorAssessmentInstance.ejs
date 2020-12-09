@@ -93,6 +93,33 @@
 
       <!-- ###################################################################### -->
       <!-- ###################################################################### -->
+      
+      <% if (assessment.group_work) { %>
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <%= assessment_instance_label %>
+          Contribution:
+          <%= group.name %> <i class="fas fa-users"></i>
+        </div>
+        <div id="contributionScatter" class="scatter"></div>
+        <script>
+          $(function() {
+              var xdata = [<%= contributions.time_since %>];
+              console.log(xdata);
+              var ydata = [ 12,13,1,23,24 ];
+              var options = {
+                  width: 500,
+                  height: 500,
+                  xgrid: _.range(0, 11, 1),
+                  ygrid: _.range(0, 11, 1),
+                  xlabel: 'time',
+                  ylabel: 'events',
+              };
+            scatter("#contributionScatter", xdata, ydata, options);
+          });
+        </script>
+      </div>
+      <% } %>
 
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">
