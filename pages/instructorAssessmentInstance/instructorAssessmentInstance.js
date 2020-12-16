@@ -40,7 +40,7 @@ router.get('/', (req, res, next) => {
                 sqlDb.call('group_contribution', params, (err, result) => {
                     if(ERR(err, next)) return;
                     res.locals.contributions = result.rows;
-                    console.log(result.rows);
+                    console.log(res.locals.contributions);
 
                     sqlDb.call('assessment_instances_select_log', params, (err, result) => {
                         if (ERR(err, next)) return;

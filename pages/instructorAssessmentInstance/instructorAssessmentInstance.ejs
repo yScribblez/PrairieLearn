@@ -104,16 +104,15 @@
         <div id="contributionScatter" class="scatter"></div>
         <script>
           $(function() {
-              var xdata = [<%= contributions.time_since %>];
-              console.log(xdata);
-              var ydata = [ 12,13,1,23,24 ];
+              var xdata = [<% contributions.forEach(function(event) { %><%= event.time_since %>,<% }); %>];
+              var ydata = [<% contributions.forEach(function(event) { %><%= event.user_y %>,<% }); %>];
               var options = {
                   width: 500,
                   height: 500,
                   xgrid: _.range(0, 11, 1),
-                  ygrid: _.range(0, 11, 1),
+                  ygrid: _.range(0, 7, 1),
                   xlabel: 'time',
-                  ylabel: 'events',
+                  ylabel: 'user',
               };
             scatter("#contributionScatter", xdata, ydata, options);
           });
